@@ -345,7 +345,7 @@ plt.xlabel('Dimension1', fontweight='bold')
 l1 = plt.Line2D(range(0), range(0), marker='o', color='r', linestyle='')
 l2 = plt.Line2D(range(0), range(0), marker='o', color='skyblue', linestyle='')
 plt.legend((l1, l2), ('Kcr', 'Non-Kcr'), loc='upper right', numpoints=1)
-plt.savefig("../figures/input-Layer-test-visual.png", dpi=600)  # 保存图片，dpi设置分辨率
+plt.savefig("../figures/Input-Layer-test-visual.png", dpi=600)  # 保存图片，dpi设置分辨率
 plt.show()
 
 # test : First_Conv1D_features
