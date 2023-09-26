@@ -151,7 +151,7 @@ class Model_LSTM_MutilHeadSelfAttention(nn.Module):
         self.attention = nn.MultiheadAttention(embed_dim=hidden_size * 2,num_heads=8,batch_first=True,dropout=0.5)
 
         # classfier layer：
-        self.cls_layer = nn.Linear(self.hidden_size * 2,self.num_classes)
+        # self.cls_layer = nn.Linear(self.hidden_size * 2,self.num_classes)
         # self.linear=nn.Linear(output_size,self.num_classes)
 
 
@@ -159,7 +159,7 @@ class Model_LSTM_MutilHeadSelfAttention(nn.Module):
         self.dropout2=nn.Dropout(0.3)
 
     def forward(self, inputs):
-        input_ids = inputs  # (词的id,有效的长度)：
+        input_ids = inputs
         # LSTM layer
 
         Bilstm_outputs, (last_hidden_state, last_cell_state) = self.Bilstm(inputs)
@@ -177,7 +177,6 @@ class Model_LSTM_MutilHeadSelfAttention(nn.Module):
         MutilHead_output = context
 
         # print("context shape:",context.shape)
-
         return (Bilstm_outputs, MutilHead_output), context
 
 import warnings
