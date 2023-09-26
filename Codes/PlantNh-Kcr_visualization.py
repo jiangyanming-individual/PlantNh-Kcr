@@ -115,13 +115,13 @@ class Model_LSTM_MutilHeadSelfAttention(nn.Module):
         self.attention = nn.MultiheadAttention(embed_dim=hidden_size * 2,num_heads=8,batch_first=True,dropout=0.5)
 
         # classfier layer：
-        self.cls_layer = nn.Linear(self.hidden_size * 2,self.num_classes)
+        # self.cls_layer = nn.Linear(self.hidden_size * 2,self.num_classes)
 
         self.dropout1 = nn.Dropout(0.9)
         self.dropout2=nn.Dropout(0.3)
 
     def forward(self, inputs):
-        input_ids = inputs  # (词的id,有效的长度)：
+        input_ids = inputs
         # LSTM layer
 
         Bilstm_outputs, (last_hidden_state, last_cell_state) = self.Bilstm(inputs)
@@ -137,7 +137,6 @@ class Model_LSTM_MutilHeadSelfAttention(nn.Module):
         # context = self.dropout2(context)
 
         MutilHead_output = context
-
         # print("context shape:",context.shape)
 
 
@@ -160,8 +159,6 @@ class KcrNet(nn.Module):
         super(KcrNet, self).__init__()
         # 定义卷积层：
         self.conv1 = torch.nn.Conv1d(in_channels=input_classes, out_channels=32, kernel_size=5, padding=2, stride=1)
-        # 定义pooling层：
-        # self.maxpool1=torch.nn.MaxPool1d(kernel_size=1,stride=2)
 
         self.conv2 = torch.nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, padding=2, stride=2)
         # self.maxpool2=torch.nn.MaxPool1d(kernel_size=1,stride=2)
