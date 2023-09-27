@@ -166,11 +166,8 @@ class KcrNet(nn.Module):
         super(KcrNet, self).__init__()
         # 定义卷积层：
         self.conv1 = torch.nn.Conv1d(in_channels=input_classes, out_channels=32, kernel_size=5, padding=2, stride=1)
-        # 定义pooling层：
-        # self.maxpool1=torch.nn.MaxPool1d(kernel_size=1,stride=2)
 
         self.conv2 = torch.nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, padding=2, stride=2)
-        # self.maxpool2=torch.nn.MaxPool1d(kernel_size=1,stride=2)
 
         self.conv3 = torch.nn.Conv1d(in_channels=32, out_channels=29, kernel_size=5, padding=2, stride=2)
 
@@ -492,7 +489,6 @@ def Kf_show(plt, base_fpr, roc, roc_auc):
 Kf_show(plt, base_fpr, roc, roc_auc)
 
 ####################################
-
 # 用全部的数据集进行训练：
 import numpy as np
 import math
