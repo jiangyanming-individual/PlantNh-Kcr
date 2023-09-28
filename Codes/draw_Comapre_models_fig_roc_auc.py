@@ -69,7 +69,7 @@ plt.plot(fpr3,tpr3,label="LightGBM(BLOSUM62) (AUC={:.4f})".format(LightGBM_BLOSU
 plt.plot(fpr4,tpr4,label="LSTM(BE) (AUC={:.4f})".format(LSTM_BE_roc_auc),lw=1,alpha=0.8,linestyle='-',color='orange')
 plt.plot(fpr5,tpr5,label="BiLSTM(BE) (AUC={:.4f})".format(BiLSTM_BE_roc_auc),lw=1,alpha=0.8,linestyle='-',color='cornflowerblue')
 plt.plot(fpr6,tpr6,label="CNN(BE) (AUC={:.4f})".format(CNN_AAindex_roc_auc),lw=1,alpha=0.8,linestyle='-',color='b')
-plt.plot(fpr7,tpr7,label="OurModel (AUC={:.4f})".format(PlantNh_Kcr_roc_auc),lw=1,alpha=0.8,linestyle='-',color='r')
+plt.plot(fpr7,tpr7,label="PlantNh-Kcr (AUC={:.4f})".format(PlantNh_Kcr_roc_auc),lw=1,alpha=0.8,linestyle='-',color='r')
 
 plt.plot([0,1],[0,1],lw=1,alpha=0.8,linestyle='--',color='c')
 
@@ -77,7 +77,7 @@ plt.xlim([-0.05, 1.05])#横竖增加一点长度 以便更好观察图像
 plt.ylim([-0.05, 1.05])
 
 plt.title('ROC curve')
-plt.legend(loc=4)
+plt.legend(loc=4,fontsize=9)
 plt.xlabel('False Positive Rate',fontweight='bold')
 plt.ylabel('True Positive Rate',fontweight='bold')
 

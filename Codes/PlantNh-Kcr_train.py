@@ -291,7 +291,6 @@ def train(model, train_loader, valid_loader,device):
             _,y_predict = model(x_data)
             # print("y_predict:",y_predict)
 
-            # 二分问题使用的损失函数 binary_cross_entropy函数；
             loss = F.cross_entropy(y_predict, y_data)
 
             # loss=loss_fn(y_predict,y_data)

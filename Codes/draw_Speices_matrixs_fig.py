@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 categories=['Wheat','Tabacum','Rice','Peanut','Papaya','Total']
 
 #labels
-x_labels = ['SN','SP','ACC', 'MCC', 'AUC']
+x_labels = ['Sn','Sp','ACC', 'MCC', 'AUC']
 
 #colors
 colors=['pink','orange','cyan','lime','deepskyblue','b']
@@ -42,29 +42,6 @@ x_tick_labels=x_labels
 plt.figure(figsize=(10, 6))
 for i in range(len(categories)):
     plt.bar(np.arange(len(x_labels)) + i*0.15, values[i], width=0.15,label=categories[i],color=colors[i])
-
-# 显示值：
-# for j in range(len(x_labels)):
-#     # print(values[0][i])
-#     for i in range(len(values)):
-#         # print(i)
-#         x=j
-#
-#         if i == 0:
-#             x=x
-#         elif i == 1:
-#             x+= 0.15
-#         elif i == 2:
-#             x+= 0.3
-#         elif i==3:
-#             x+=0.45
-#         elif i == 4:
-#             x+=0.6
-#         else:
-#             x+=0.75
-#
-#         plt.text(x,values[i][j],str(values[i][j]),ha='center',va='bottom')
-
 
 ax=plt.gca()
 plt.gca().spines['top'].set_visible(False)
