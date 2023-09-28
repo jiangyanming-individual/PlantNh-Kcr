@@ -105,7 +105,6 @@ class Model_LSTM(nn.Module):
         self.hidden_size = hidden_size
         # num_classes：
         self.num_classes = num_classes
-
         # LSTM layers：
         self.num_layers = num_layers
 

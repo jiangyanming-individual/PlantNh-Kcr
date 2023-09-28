@@ -50,9 +50,6 @@ def get_Binary_encoding(data):
     y=[]
 
     for seq,label in data:
-
-        # print(seq)
-        # print(label)
         one_code=[]
         for i in seq:
             vector=[0]*21
@@ -345,7 +342,6 @@ def RF_Classifer(train_data,ind_test_data):
                                 warm_start=False, class_weight='balanced')
 
     #class_weight='balanced' 均衡样本
-
     X_train,y_train=train_data
 
     kf=KFold(n_splits=5,shuffle=True)
