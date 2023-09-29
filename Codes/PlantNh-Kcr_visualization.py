@@ -286,7 +286,7 @@ test_Third_Conv1D_features = np.concatenate(test_Third_Conv1D_features, axis=0)
 print("test_Third_Conv1D_features.shape:", test_Third_Conv1D_features.shape)
 
 test_total_outputs_features = np.concatenate(test_total_outputs_features, axis=0)
-print("test_Third_Conv1D_features.shape:", test_total_outputs_features.shape)
+print("test_total_outputs_features.shape:", test_total_outputs_features.shape)
 
 test_Linear_features = np.concatenate(test_Linear_features, axis=0)
 print("test_Linear_features.shape:", test_Linear_features.shape)
