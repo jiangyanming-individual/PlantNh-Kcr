@@ -14,7 +14,7 @@ fpr1,tpr1,_=roc_curve(ourModel_y_test_true,ourModel_y_test_score)
 PlantNh_Kcr_roc_auc=auc(fpr1,tpr1)
 
 
-plt.plot(fpr1,tpr1,label="OurModel (AUC={:.4f})".format(PlantNh_Kcr_roc_auc),lw=1,alpha=0.8,linestyle='-',color='r')
+plt.plot(fpr1,tpr1,label="PlantNh-Kcr (AUC={:.4f})".format(PlantNh_Kcr_roc_auc),lw=1,alpha=0.8,linestyle='-',color='r')
 
 
 plt.plot([0,1],[0,1],lw=1,alpha=0.8,linestyle='--',color='c')

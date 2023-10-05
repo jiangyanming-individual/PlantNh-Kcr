@@ -148,7 +148,6 @@ class Model_LSTM(nn.Module):
     def forward(self, inputs):
 
         # LSTM layer
-
         Bilstm_outputs, (last_hidden_state, last_cell_state) = self.Bilstm(inputs)
         # print("Bilstm_outputs shape:",Bilstm_outputs.shape)
 

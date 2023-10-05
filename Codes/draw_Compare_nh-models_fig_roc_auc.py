@@ -26,7 +26,7 @@ nhKcr_roc_auc=auc(fpr3,tpr3)
 
 plt.plot(fpr3,tpr3,label="nhKcr (AUC={:.4f})".format(nhKcr_roc_auc),lw=1,alpha=0.8,linestyle='-',color='hotpink')
 plt.plot(fpr2,tpr2,label="CapsNh-Kcr (AUC={:.4f})".format(CpasNhKcr_roc_auc),lw=1,alpha=0.8,linestyle='-',color='b')
-plt.plot(fpr1,tpr1,label="OurModel (AUC={:.4f})".format(PlantNh_Kcr_roc_auc),lw=1,alpha=0.8,linestyle='-',color='r')
+plt.plot(fpr1,tpr1,label="PlantNh-Kcr (AUC={:.4f})".format(PlantNh_Kcr_roc_auc),lw=1,alpha=0.8,linestyle='-',color='r')
 
 
 plt.plot([0,1],[0,1],lw=1,alpha=0.8,linestyle='--',color='c')

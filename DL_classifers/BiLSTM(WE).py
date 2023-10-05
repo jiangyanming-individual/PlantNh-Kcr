@@ -21,8 +21,8 @@ for i in range(len(AA_aaindex)):
 train_filepath= '../Datasets/train.csv'
 test_filepath= '../Datasets/ind_test.csv'
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
+# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device='cpu'
 
 # 加载数据集,返回seq,label
 def load_data(file_path):
@@ -129,7 +129,7 @@ class Model_LSTM(nn.Module):
 
         # embedding layer;
         embeded_input = self.embedding(input_ids) #(batch_size,seq_len)
-        # print("embeded_input shape:",embeded_input.shape)
+        print("embeded_input shape:",embeded_input.shape)
         embeded_output = embeded_input
         # LSTM layer
 
@@ -376,7 +376,7 @@ for train_index, valid_index in kf.split(train_set):
     valid_loader = DataLoader(valid_dataset, batch_size=batch_size, shuffle=True, drop_last=False)
 
 
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     # 实例化总的模型：
     model = Model_LSTM(vocab_size, embedding_size, hidden_size, num_classes, num_layers)
@@ -560,7 +560,7 @@ batch_size = 128
 
 # 形成DataLoader:
 train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, drop_last=False)
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # 实例化总的模型：
 model = Model_LSTM(vocab_size, embedding_size, hidden_size, num_classes, num_layers)
