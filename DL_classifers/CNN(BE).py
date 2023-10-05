@@ -165,7 +165,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # 模型准备
-epochs =50
+epochs =30
 batch_size = 128
 learn_rate = 0.001
 
