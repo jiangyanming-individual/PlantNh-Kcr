@@ -130,7 +130,6 @@ class Model_LSTM(nn.Module):
         # LSTM layers：
         self.num_layers = num_layers
 
-
         # BiLSTM：
         self.Bilstm = nn.LSTM(
             input_size=self.input_size,
