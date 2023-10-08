@@ -117,36 +117,21 @@ class Model_LSTM_MutilHeadSelfAttention(nn.Module):
             num_layers=self.num_layers,
             bidirectional=True,
             batch_first=True,
-            dropout=0.5
         )
         # attention layer：
         self.attention = nn.MultiheadAttention(embed_dim=hidden_size * 2,num_heads=8,batch_first=True,dropout=0.5)
 
-        # classfier layer：
-        # self.cls_layer = nn.Linear(self.hidden_size * 2,self.num_classes)
-
         self.dropout1 = nn.Dropout(0.9)
-        self.dropout2=nn.Dropout(0.3)
 
     def forward(self, inputs):
         input_ids = inputs
         # LSTM layer
         Bilstm_outputs, (last_hidden_state, last_cell_state) = self.Bilstm(inputs)
-        # print("Bilstm_outputs shape:",Bilstm_outputs.shape)
-        # (batch_size,seq_len,hidden_size * 2)
 
         Bilstm_outputs = self.dropout1(Bilstm_outputs)
-        # print("Bilstm_outputs shape:",Bilstm_outputs.shape)
-
         context,_ = self.attention(Bilstm_outputs,Bilstm_outputs,Bilstm_outputs)
-        # print("context shape:",context.shape)
-        # context = self.dropout2(context)
 
         MutilHead_output = context
-
-        # print("context shape:",context.shape)
-
-
         return (Bilstm_outputs, MutilHead_output), context
 
 import warnings
