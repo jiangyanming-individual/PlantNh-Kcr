@@ -7,7 +7,7 @@ Please feel free to contact me if you need any further information and help, ema
 
 2. **The CML_classifer folder** and **CML_weights folder** contain conventional machine learning classifiers(for example, RF, AdaBoost, and LightGBM) and the model weight information saved during model training and independent testing, respectively.
 
-3. The code for the five-fold cross-validation, independent test, and image visualization is located in **the Codes folder**. the five-fold cross-validation model weights and independent test model weight are located in **the model_weights folder**, which also contains the model weights for each plant.
+3. The code for the five-fold cross-validation, independent test, and image visualization is located in **the Codes folder**. the five-fold cross-validation model weights and independent test model weights are located in **the model_weights folder**, which also contains the model weights for each plant.
 
 4. **The Csv folder** contains the training and test sets of various plants divided at 7:3 ratio.
 
