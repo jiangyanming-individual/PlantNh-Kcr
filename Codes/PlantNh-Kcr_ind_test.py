@@ -68,11 +68,11 @@ print(test_dataset.shape)
 
 
 #独立测试各个物种：
-wheat_filepath= "../Csv/speices_train_test_sets/wheat_test.csv"
-papaya_filepath= "../Csv/speices_train_test_sets/papaya_test.csv"
-peanut_filepath= "../Csv/speices_train_test_sets/peanut_test.csv"
-rice_filepath= '../Csv/speices_train_test_sets/rice_test.csv'
-tabacum_filepath= "../Csv/speices_train_test_sets/tabacum_test.csv"
+wheat_filepath= "../Csv/speices_train_test_datasets/wheat_test.csv"
+papaya_filepath= "../Csv/speices_train_test_datasets/papaya_test.csv"
+peanut_filepath= "../Csv/speices_train_test_datasets/peanut_test.csv"
+rice_filepath= '../Csv/speices_train_test_datasets/rice_test.csv'
+tabacum_filepath= "../Csv/speices_train_test_datasets/tabacum_test.csv"
 
 
 #wheat:
