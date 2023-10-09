@@ -58,8 +58,8 @@ if __name__ == '__main__':
 
 
 
-    # CommonWheats_Pos_data_filepath = '../Datasets/fasta_40/commonWheatPos_40.fasta'
-    # CommonWheats_Neg_data_filepath = '../Datasets/fasta_40/commonWheatNeg_40.fasta'
+    # CommonWheats_Pos_data_filepath = '../Datasets/Output_Cd-hit_40%/commonWheatPos_40.fasta'
+    # CommonWheats_Neg_data_filepath = '../Datasets/Output_Cd-hit_40%/commonWheatNeg_40.fasta'
 
     # 小麦正样本：
     # commonWheats_seq_Pos_list,commonWheats_label_Pos_list=deal_data(CommonWheats_Pos_data_filepath,isPositive=True)
@@ -70,8 +70,8 @@ if __name__ == '__main__':
 
 
 
-    # wheatSeeding_Pos_data_filepath="../Datasets/fasta_40/wheatSeedingPos_40.fasta"
-    # wheatSeeding_Neg_data_filepath="../Datasets/fasta_40/wheatSeedingNeg_40.fasta"
+    # wheatSeeding_Pos_data_filepath="../Datasets/Output_Cd-hit_40%/wheatSeedingPos_40.fasta"
+    # wheatSeeding_Neg_data_filepath="../Datasets/Output_Cd-hit_40%/wheatSeedingNeg_40.fasta"
 
     # wheatSeeding_seq_Pos_list, wheatSeedinglabel_Pos_list = deal_data(wheatSeeding_Pos_data_filepath, isPositive=True)
     # get_data(wheatSeeding_seq_Pos_list, wheatSeedinglabel_Pos_list, save_train_filepath="../Csv/wheatSeeding_train_Pos.Csv",
@@ -81,8 +81,8 @@ if __name__ == '__main__':
     # get_data(wheatSeeding_seq_Neg_list, wheatSeeding_label_Neg_list, save_train_filepath="../Csv/wheatSeeding_train_Neg.Csv",
     #          save_test_path="../Csv/wheatSeeding_test_Neg.Csv")
 
-    # Rice_Pos_data_filepath = '../Datasets/fasta_40/ricePos_40.fasta'
-    # Rice_Neg_data_filepath = '../Datasets/fasta_40/riceNeg_40.fasta'
+    # Rice_Pos_data_filepath = '../Datasets/Output_Cd-hit_40%/ricePos_40.fasta'
+    # Rice_Neg_data_filepath = '../Datasets/Output_Cd-hit_40%/riceNeg_40.fasta'
     # # 水稻正样本：
     # rice_seq_Pos_list, rice_label_Pos_list = deal_data(Rice_Pos_data_filepath, isPositive=True)
     # get_data(rice_seq_Pos_list, rice_label_Pos_list, save_train_filepath="../Csv/rice_train_Pos.Csv", save_test_path="../Csv/rice_test_Pos.Csv")
@@ -91,8 +91,8 @@ if __name__ == '__main__':
     # get_data(rice_seq_Neg_list, rice_label_Neg_list, save_train_filepath="../Csv/rice_train_Neg.Csv", save_test_path="../Csv/rice_test_Neg.Csv")
     #
     #
-    # Tabacum_Pos_data_filepath = '../Datasets/fasta_40/tabacumPos_40.fasta'
-    # Tabacum_Neg_data_filepath = '../Datasets/fasta_40/tabacumNeg_40.fasta'
+    # Tabacum_Pos_data_filepath = '../Datasets/Output_Cd-hit_40%/tabacumPos_40.fasta'
+    # Tabacum_Neg_data_filepath = '../Datasets/Output_Cd-hit_40%/tabacumNeg_40.fasta'
 
     # 烟草positive：
 
@@ -108,8 +108,8 @@ if __name__ == '__main__':
 
 
     #peanut
-    peanut_Pos_data_filepath = "../Datasets/fasta_40/peanutPos_40.fasta"
-    peanut_Neg_data_filepath = "../Datasets/fasta_40/peanutNeg_40.fasta"
+    peanut_Pos_data_filepath = "../Datasets/Output_Cd-hit_40%/peanutPos_40.fasta"
+    peanut_Neg_data_filepath = "../Datasets/Output_Cd-hit_40%/peanutNeg_40.fasta"
 
     peanut_seq_Pos_list, peanut_label_Pos_list = deal_data(peanut_Pos_data_filepath, isPositive=True)
     get_data(peanut_seq_Pos_list, peanut_label_Pos_list,
@@ -124,8 +124,8 @@ if __name__ == '__main__':
 
 
     #papaya
-    papaya_Pos_data_filepath = "../Datasets/fasta_40/papayaPos_40.fasta"
-    papaya_Neg_data_filepath = "../Datasets/fasta_40/papayaNeg_40.fasta"
+    papaya_Pos_data_filepath = "../Datasets/Output_Cd-hit_40%/papayaPos_40.fasta"
+    papaya_Neg_data_filepath = "../Datasets/Output_Cd-hit_40%/papayaNeg_40.fasta"
 
     papaya_seq_Pos_list, papaya_label_Pos_list = deal_data(papaya_Pos_data_filepath, isPositive=True)
     get_data(papaya_seq_Pos_list, papaya_label_Pos_list,
