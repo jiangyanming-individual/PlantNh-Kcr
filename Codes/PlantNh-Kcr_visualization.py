@@ -15,8 +15,8 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
 #数据集的文件路径：
-train_filepath= '../Datasets/train.Csv'
-test_filepath= '../Datasets/ind_test.Csv'
+train_filepath= '../Datasets/train.csv'
+test_filepath= '../Datasets/ind_test.csv'
 
 
 # 对数据集进行编码的操作：
@@ -114,19 +114,9 @@ class Model_LSTM_MutilHeadSelfAttention(nn.Module):
     def forward(self, inputs):
         input_ids = inputs
         # LSTM layer
-
         Bilstm_outputs, (last_hidden_state, last_cell_state) = self.Bilstm(inputs)
-        # print("Bilstm_outputs shape:",Bilstm_outputs.shape)
-        # (batch_size,seq_len,hidden_size * 2)
-
         Bilstm_outputs = self.dropout1(Bilstm_outputs)
-
-        # print("Bilstm_outputs shape:",Bilstm_outputs.shape)
-
         context,_ = self.attention(Bilstm_outputs,Bilstm_outputs,Bilstm_outputs)
-        # print("context shape:",context.shape)
-        # context = self.dropout2(context)
-
         MutilHead_output = context
         return (Bilstm_outputs, MutilHead_output), context
 

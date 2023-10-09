@@ -70,8 +70,6 @@ print(train_dataset.shape)
 test_dataset, test_labels = create_encode_dataset(test_filepath)
 print(test_dataset.shape)
 
-
-
 # 构建数据集：
 class MyDataset(Dataset):
 
@@ -227,7 +225,6 @@ epochs = 50
 batch_size = 128
 learn_rate = 0.001
 
-# 使用低级api进行构建训练；
 train_loss = []
 train_acc = []
 train_auc = []
@@ -235,7 +232,6 @@ train_auc = []
 eval_losses = []
 eval_accuracies = []
 eval_auces = []
-
 
 
 roc = []
@@ -420,10 +416,7 @@ for train_index, valid_index in kf.split(train_set):
     # save tpr,fpr,auc
 
     # 保存模型：
-
-
     torch.save(model.state_dict(), '../model_weights/'+str(fold) + '_PlantNh-Kcr_kfold_model.pth'.format(fold))
-
     fold += 1
 
 # np.save('../np_weights/PlantNh-Kcr_roc_auc.npy', roc_auc)
@@ -562,8 +555,6 @@ def total_train(model, train_loader, device):
 from sklearn import metrics
 # 定义DataLoader
 from torch.utils.data import DataLoader
-
-batch_size = 128
 
 # 形成DataLoader:
 train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, drop_last=False)

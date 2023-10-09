@@ -98,7 +98,6 @@ tabacum_filepath= "../Csv/speices_train_test_datasets/tabacum_test.csv"
 # print(test_dataset.shape)
 
 
-
 # 构建数据集：
 class MyDataset(Dataset):
 
@@ -115,8 +114,6 @@ class MyDataset(Dataset):
     def __len__(self):
         return len(self.datas)
 
-
-# 形成数据集：tuple
 # train_set = MyDataset(train_dataset, train_labels)
 test_set = MyDataset(test_dataset, test_labels)
 
