@@ -421,7 +421,7 @@ def RF_Classifer(train_data,ind_test_data):
     train_params.append(np.mean(train_ACC))
     train_params.append(np.mean(train_MCC))
 
-    np.save("../ML_weights/RF_5kfold_BLOSUM62_params.npy",train_params)
+    np.save("../CML_weights/RF_5kfold_BLOSUM62_params.npy", train_params)
     print("Train Mean : SN is {},SP is {},ACC is {},MCC is {}".format(np.mean(train_SN), np.mean(train_SP), np.mean(train_ACC),np.mean(train_MCC)))
     print("ind_test start ...")
 
@@ -442,8 +442,8 @@ def RF_Classifer(train_data,ind_test_data):
     # ind test auc:
     test_auc=roc_auc_score(y_test,rf_clf.predict_proba(X_test)[:,1])
 
-    np.save('../ML_weights/RF_BLOSUM62_y_test_true.npy', y_test)
-    np.save('../ML_weights/RF_BLOSUM62_y_test_score.npy', rf_clf.predict_proba(X_test)[:,1])
+    np.save('../CML_weights/RF_BLOSUM62_y_test_true.npy', y_test)
+    np.save('../CML_weights/RF_BLOSUM62_y_test_score.npy', rf_clf.predict_proba(X_test)[:, 1])
 
     print("test auc :",test_auc)
 
@@ -472,7 +472,7 @@ def RF_Classifer(train_data,ind_test_data):
     test_params.append(MCC)
 
     #save test SN、SP、ACC、MCC
-    np.save("../ML_weights/RF_test_BLOSUM62_params.npy", test_params)
+    np.save("../CML_weights/RF_test_BLOSUM62_params.npy", test_params)
 
     print("ind test: TP is {},FP is {},TN is {},FN is {}".format(TP, FP, TN, FN))
     print("ind test: SN is {},SP is {},ACC is {},MCC is {}".format(SN, SP, ACC, MCC))

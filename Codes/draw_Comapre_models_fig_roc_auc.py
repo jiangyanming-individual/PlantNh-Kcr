@@ -7,15 +7,15 @@ from sklearn.metrics import roc_curve, auc  ###计算roc和auc
 import numpy as np
 
 
-RF_BE_y_test_true=np.load('../ML_weights/RF_BE_y_test_true.npy').tolist()
-RF_BE_y_test_score=np.load('../ML_weights/RF_BE_y_test_score.npy').tolist()
+RF_BE_y_test_true=np.load('../CML_weights/RF_BE_y_test_true.npy').tolist()
+RF_BE_y_test_score=np.load('../CML_weights/RF_BE_y_test_score.npy').tolist()
 
 
-Ada_AAindex_y_test_true=np.load('../ML_weights/Ada_AAindex_y_test_true.npy').tolist()
-Ada_AAindex_y_test_score=np.load('../ML_weights/Ada_AAindex_y_test_score.npy').tolist()
+Ada_AAindex_y_test_true=np.load('../CML_weights/Ada_AAindex_y_test_true.npy').tolist()
+Ada_AAindex_y_test_score=np.load('../CML_weights/Ada_AAindex_y_test_score.npy').tolist()
 
-LightGBM_BLOSUM62_y_test_true=np.load('../ML_weights/LGB_BLOSUM62_y_test_true.npy').tolist()
-LightGBM_BLOUSUM62_y_test_score=np.load('../ML_weights/LGB_BLOSUM62_y_test_score.npy').tolist()
+LightGBM_BLOSUM62_y_test_true=np.load('../CML_weights/LGB_BLOSUM62_y_test_true.npy').tolist()
+LightGBM_BLOUSUM62_y_test_score=np.load('../CML_weights/LGB_BLOSUM62_y_test_score.npy').tolist()
 
 LSTM_BE_y_test_true=np.load('../np_weights/LSTM(BE)_y_test_true.npy').tolist()
 LSTM_BE_y_test_score=np.load('../np_weights/LSTM(BE)_y_test_score.npy').tolist()
