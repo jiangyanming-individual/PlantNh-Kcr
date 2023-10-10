@@ -2,7 +2,7 @@
 This code is for the article 'PlantNh-Kcr: A deep learning model for predicting non-histone crotonylation sites in plants'
 Please feel free to contact me if you need any further information and help, email : jym19943856480@163.com.
 
-###The introduction of each folder
+### The introduction of each folder
 1. We used python version 3.9 and pytorch version 1.13.1.
 
 2. **The CML_classifer folder** and **CML_weights folder** contain conventional machine learning classifiers(for example, RF, AdaBoost, and LightGBM) and the model weight information saved during model training and independent testing, respectively.
