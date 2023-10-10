@@ -1,5 +1,5 @@
 # PlantNh-Kcr
-This code is for the article 'PlantNh-Kcr: A deep learning model for predicting non-histone crotonylation sites in plants'
+This code is for the article 'PlantNh-Kcr: A deep learning model for predicting non-histone crotonylation sites in plants'.
 Please feel free to contact me if you need any further information and help, email : jym19943856480@163.com.
 
 ### The introduction of each folder
