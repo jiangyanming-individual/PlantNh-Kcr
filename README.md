@@ -13,7 +13,7 @@ Please feel free to contact me if you need any further information and help, ema
 
 5. There are the files of total training sets and independent test sets in **the Datasets folder**, which also includes the datasets after Cd-hit with 40% sequence identity.
 
-6. **The DL_classifer folder** and **DL_weights folder** contain deep learning classifiers(for example, CNN, LSTM, and BiLSTM) and the model weight information saved during model training and independent testing, respectively.
+6. **The DL_classifer folder** and **DL_weights folder** contains deep learning classifiers(for example, CNN, LSTM, and BiLSTM) and the model weight information saved during model training and independent testing, respectively.
 
 7. **The figures folder** includes the results of images for this paper.
 
