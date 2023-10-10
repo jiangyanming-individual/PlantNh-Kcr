@@ -15,6 +15,6 @@ Please feel free to contact me if you need any further information and help, ema
 
 6. **The DL_classifer folder** and **DL_weights folder** contain deep learning classifiers(for example, CNN, LSTM, and BiLSTM) and the model weight information saved during model training and independent testing, respectively.
 
-7. **The figures folder** includes the images for this paper.
+7. **The figures folder** includes the result of images for this paper.
 
 8. The information on metric values(such as Sn, Sp, ACC, MCC, and AUC) is located in **the np_weights folder**.
