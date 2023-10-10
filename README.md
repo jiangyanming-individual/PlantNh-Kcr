@@ -2,6 +2,8 @@
 This code is for the article 'PlantNh-Kcr: A deep learning model for predicting non-histone crotonylation sites in plants'.
 Please feel free to contact me if you need any further information and help, email : jym19943856480@163.com.
 
+### Note that  if the program has a memory overflow problem occurs, please try setting **device='cpu'**
+
 ### The introduction of each folder
 1. We used python version 3.9 and pytorch version 1.13.1.
 
