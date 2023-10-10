@@ -7,14 +7,14 @@ Please feel free to contact me if you need any further information and help, ema
 
 2. **The CML_classifer folder** and **CML_weights folder** contain conventional machine learning classifiers(for example, RF, AdaBoost, and LightGBM) and the model weight information saved during model training and independent testing, respectively.
 
-3. The code for the five-fold cross-validation, independent test, and image visualization is located in **the Codes folder**. the five-fold cross-validation model weights and independent test model weights are located in **the model_weights folder**, which also contains the model weights for each plant.
+3. The code for the five-fold cross-validation, independent test, and image visualization are located in **the Codes folder**. the five-fold cross-validation model weight and independent test model weight are located in **the model_weights folder**, which also contains the model weight for each plant.
 
 4. **The Csv folder** contains the training and test sets of various plants divided at 7:3 ratio.
 
-5. There are the files of training sets and independent test sets in **the Datasets folder**, which also include the datasets after Cd-hit with 40% sequence identity.
+5. There are the files of total training sets and independent test sets in **the Datasets folder**, which also includes the datasets after Cd-hit with 40% sequence identity.
 
 6. **The DL_classifer folder** and **DL_weights folder** contain deep learning classifiers(for example, CNN, LSTM, and BiLSTM) and the model weight information saved during model training and independent testing, respectively.
 
-7. **The figures folder** includes the result of images for this paper.
+7. **The figures folder** includes the results of images for this paper.
 
-8. The information on metric values(such as Sn, Sp, ACC, MCC, and AUC) is located in **the np_weights folder**.
+8. The information on metric values(such as Sn, Sp, ACC, MCC, and AUC) are located in **the np_weights folder**.
