@@ -9,7 +9,7 @@ Please feel free to contact me if you need any further information and help, ema
 
 3. The code for the five-fold cross-validation, independent test, and image visualization are located in **the Codes folder**. the five-fold cross-validation model weight and independent test model weight are located in **the model_weights folder**, which also contains the model weight for each plant.
 
-4. **The Csv folder** contains the csv file of training and test sets for each plant divided at a 7:3 ratio.
+4. **The Csv folder** contains the csv files of training and test sets for each plant divided at a 7:3 ratio.
 
 5. There are the files of total training sets and independent test sets in **the Datasets folder**, which also includes the datasets after Cd-hit with 40% sequence identity.
 
