@@ -3,9 +3,9 @@
 # software: PyCharm
 # project:PlantNh-Kcr
 
-
-
-# ind -test:
+"""
+independent test
+"""
 import torch
 from torch import nn
 from torch.utils.data import Dataset, DataLoader
@@ -15,14 +15,14 @@ import numpy as np
 from sklearn import metrics
 from sklearn.metrics import roc_auc_score, roc_curve, auc
 
-# 对数据进行二进制编码：
+#amino acid sequence
 Amino_acid_sequence = 'ACDEFGHIKLMNPQRSTVWYX'
 
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-# 对数据集进行编码的操作：
+#binary encoding
 def create_encode_dataset(filepath):
     data_list = []
     result_seq_datas = []
@@ -37,13 +37,13 @@ def create_encode_dataset(filepath):
         # print(len(data_list))
 
     for data in data_list:
-        # 取一条氨基酸序列和对应的lable；
-        code = []  # 一条序列
+
+        code = []  # one sequence
         # seq_index=1
 
         result_seq_labels.append(int(data[1]))
         for seq in data[0]:
-            one_code = []  # 一条序列
+            one_code = []
             for amino_acid_index in Amino_acid_sequence:
                 if amino_acid_index == seq:
                     flag = 1
@@ -59,7 +59,7 @@ def create_encode_dataset(filepath):
     return np.array(result_seq_datas), np.array(result_seq_labels, dtype=np.int64)
 
 
-#数据集的文件路径：
+#test file path
 test_filepath= '../Datasets/ind_test.csv'
 
 test_dataset, test_labels = create_encode_dataset(test_filepath)
@@ -67,7 +67,7 @@ print(test_dataset.shape)
 
 
 
-#独立测试各个物种：
+#different plants
 wheat_filepath= "../Csv/speices_train_test_datasets/wheat_test.csv"
 papaya_filepath= "../Csv/speices_train_test_datasets/papaya_test.csv"
 peanut_filepath= "../Csv/speices_train_test_datasets/peanut_test.csv"
@@ -98,7 +98,6 @@ tabacum_filepath= "../Csv/speices_train_test_datasets/tabacum_test.csv"
 # print(test_dataset.shape)
 
 
-# 构建数据集：
 class MyDataset(Dataset):
 
     def __init__(self, datas, labels):
@@ -167,9 +166,7 @@ class Model_LSTM_MutilHeadSelfAttention(nn.Module):
         return (Bilstm_outputs, MutilHead_output), context
 
 import warnings
-# 模型训练：
 warnings.filterwarnings("ignore")
-# LSTM网络隐状态向量的维度
 
 input_size=len(Amino_acid_sequence)
 hidden_size = 64
@@ -181,21 +178,19 @@ class KcrNet(nn.Module):
 
     def __init__(self, input_classes=21, nums_classes=2):
         super(KcrNet, self).__init__()
-        # 定义卷积层：
+
         self.conv1 = torch.nn.Conv1d(in_channels=input_classes, out_channels=32, kernel_size=5, padding=2, stride=1)
-        # 定义pooling层：
-        # self.maxpool1=torch.nn.MaxPool1d(kernel_size=1,stride=2)
+
 
         self.conv2 = torch.nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, padding=2, stride=2)
-        # self.maxpool2=torch.nn.MaxPool1d(kernel_size=1,stride=2)
 
         self.conv3 = torch.nn.Conv1d(in_channels=32, out_channels=29, kernel_size=5, padding=2, stride=2)
 
         self.BiLSTM_ATT=Model_LSTM_MutilHeadSelfAttention(input_size=input_size,hidden_size=hidden_size,num_layers=num_layers)
 
-        # 定义全连接层：
+        # flatten layer
         self.flatten = torch.nn.Flatten()
-        # 定义感知层；
+        # lienar layer
         self.linear1 = torch.nn.Linear(in_features=29 * 136, out_features=128)
         self.linear2 = torch.nn.Linear(in_features=128, out_features=nums_classes)
 
@@ -207,45 +202,48 @@ class KcrNet(nn.Module):
 
         inputs=x
 
-        x = torch.permute(x, [0, 2, 1]) # 对数据进行重新排列
+        x = torch.permute(x, [0, 2, 1]) #permute
 
-        # 第一层卷积
+        # first conv1d
         x = self.conv1(x)
         x = F.relu(x)
-        # x=self.maxpool1(x)
         x = self.dropout1(x)
 
         First_outputs=x
 
-        # 第二层卷积
+        #seconde conv1d
         x = self.conv2(x)
         x = F.relu(x)
-        # x=self.maxpool2(x)
+
         x = self.dropout2(x)
         Second_outputs=x
 
+        #third conv1d
         x = self.conv3(x)
         x = F.relu(x)
         x = self.dropout2(x)
         Third_outputs=x
         # print("final x shape:",x.shape)
 
+        #the outpur of BiLSTM and attention layers
         visual_outputs,BiLSTM_outputs=self.BiLSTM_ATT(inputs)
 
 
+        #concate:
         total_outputs=torch.cat([x,BiLSTM_outputs],dim=-1)
         # print("total_outputs shape:",total_outputs.shape)
 
-        # 全连接层：
+        #flatten layer
         x = self.flatten(total_outputs)
 
         x = self.linear1(x)
-        x = F.relu(x)  # 激活函数
+        x = F.relu(x)  #activate funcation
         Linear_output=x
 
         x = self.linear2(x)
-        return (inputs,First_outputs,Second_outputs,Third_outputs,visual_outputs,Linear_output),x
 
+        #the output of each layer and the final output
+        return (inputs,First_outputs,Second_outputs,Third_outputs,visual_outputs,Linear_output),x
 
 
 model=KcrNet()
@@ -266,7 +264,6 @@ base_fpr[-1] = 1.0
 
 test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=True, drop_last=False)
 
-#实例化模型和加载模型
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 model = KcrNet()
@@ -326,7 +323,7 @@ with torch.no_grad():
         TN += ((y_true_label == 0) & (y_test_label == 0)).sum().item()
         FN += ((y_true_label == 0) & (y_test_label == 1)).sum().item()
 
-        # 计算损失值：
+        #calculate loss
         loss = F.cross_entropy(y_test_pred, y_data)
 
         #calculate acc
@@ -335,7 +332,7 @@ with torch.no_grad():
         auc = metrics.roc_auc_score(y_data[:].detach().cpu().numpy(), y_test_pred[:, 1].detach().cpu().numpy())
 
 
-        # 计算得分
+        #calculate sscore
         y_test_true.append(y_data[:].detach().cpu().numpy())
         y_test_score.append(y_test_pred[:, 1].detach().cpu().numpy())
 
@@ -345,11 +342,11 @@ with torch.no_grad():
 
     avg_acc, avg_loss, avg_auc = np.mean(test_acc), np.mean(test_loss), np.mean(test_auc)
 
-    # 合并数据：
+    # concate data
     y_test_true = np.concatenate(y_test_true)
     y_test_score = np.concatenate(y_test_score)
 
-    # 保存真实值和预测值的值
+    # save the score values and true values
     # np.save('../np_weights/PlantNh-Kcr_y_test_true.npy', y_test_true)
     # np.save('../np_weights/PlantNh-Kcr_y_test_score.npy', y_test_score)
 
@@ -369,7 +366,7 @@ with torch.no_grad():
 
     # eval_SN_SP_ACC_MCC=[]
 
-    # 计算SN，SP，ACC，MCC
+    # calculate SN，SP，ACC，MCC
     SN = TP / (TP + FN)
     SP = TN / (TN + FP)
     ACC = (TP + TN) / (TP + TN + FP + FN)
@@ -381,7 +378,6 @@ with torch.no_grad():
     eval_SN_SP_ACC_MCC.append(MCC)
 
     # np.save('../np_weights/PlantNh-Kcr_eval.npy', eval_SN_SP_ACC_MCC)
-
     print("ind_test TP is {},FP is {},TN is {},FN is {}".format(TP, FP, TN, FN))
     print("ind_test : SN is {},SP is {},ACC is {},MCC is {}".format(SN, SP, ACC, MCC))
 

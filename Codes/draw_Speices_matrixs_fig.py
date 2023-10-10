@@ -51,16 +51,13 @@ plt.xticks(x_ticks + (len(categories)-1)*0.15/2, x_tick_labels)
 
 from matplotlib.pyplot import MultipleLocator
 
-# 设置标题和标签
 plt.ylabel('Score')
 y_major_locator=MultipleLocator(0.1)
 ax.yaxis.set_major_locator(y_major_locator)
 plt.ylim((0,1))
 
-# 设置图例横向显示在上方区域
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.11), ncol=len(categories),frameon=False)
 
 #save figure
 plt.savefig('../figures/species_ind_test.png')
-# 显示柱状图
 plt.show()

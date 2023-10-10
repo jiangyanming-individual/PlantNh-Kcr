@@ -9,17 +9,16 @@ import numpy as np
 from sklearn import metrics
 from sklearn.metrics import roc_auc_score, roc_curve, auc
 
-# 对数据进行二进制编码：
 Amino_acid_sequence = 'ACDEFGHIKLMNPQRSTVWYX'
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-#数据集的文件路径：
+#the filepath of training and test set
 train_filepath= '../Datasets/train.csv'
 test_filepath= '../Datasets/ind_test.csv'
 
 
-# 对数据集进行编码的操作：
+#binary encoding
 def create_encode_dataset(filepath):
     data_list = []
     result_seq_datas = []
@@ -34,13 +33,12 @@ def create_encode_dataset(filepath):
         # print(len(data_list))
 
     for data in data_list:
-        # 取一条氨基酸序列和对应的lable；
-        code = []  # 一条序列
-        # seq_index=1
+        # get sequence and label
+        code = []
 
         result_seq_labels.append(int(data[1]))
         for seq in data[0]:
-            one_code = []  # 一条序列
+            one_code = []
             for amino_acid_index in Amino_acid_sequence:
                 if amino_acid_index == seq:
                     flag = 1
@@ -49,8 +47,6 @@ def create_encode_dataset(filepath):
                 one_code.append(flag)
 
             code.extend(one_code)
-
-        # one_seq_data=np.array(code).astype('float32').reshape((1,29,29))
         result_seq_datas.append(code)
         # print(one_seq_data)
 
@@ -63,7 +59,6 @@ test_dataset, test_labels = create_encode_dataset(test_filepath)
 print(test_dataset.shape)
 
 
-# 构建数据集：
 class MyDataset(Dataset):
 
     def __init__(self, datas, labels):
@@ -80,7 +75,6 @@ class MyDataset(Dataset):
         return len(self.datas)
 
 
-# 形成数据集：tuple
 # train_set = MyDataset(train_dataset, train_labels)
 test_set = MyDataset(test_dataset, test_labels)
 
@@ -115,15 +109,16 @@ class Model_LSTM_MutilHeadSelfAttention(nn.Module):
         input_ids = inputs
         # LSTM layer
         Bilstm_outputs, (last_hidden_state, last_cell_state) = self.Bilstm(inputs)
+
         Bilstm_outputs = self.dropout1(Bilstm_outputs)
+
         context,_ = self.attention(Bilstm_outputs,Bilstm_outputs,Bilstm_outputs)
+
         MutilHead_output = context
         return (Bilstm_outputs, MutilHead_output), context
 
 import warnings
-# 模型训练：
 warnings.filterwarnings("ignore")
-# LSTM网络隐状态向量的维度
 
 input_size=len(Amino_acid_sequence)
 hidden_size = 64
@@ -135,19 +130,17 @@ class KcrNet(nn.Module):
 
     def __init__(self, input_classes=21, nums_classes=2):
         super(KcrNet, self).__init__()
-        # 定义卷积层：
+
         self.conv1 = torch.nn.Conv1d(in_channels=input_classes, out_channels=32, kernel_size=5, padding=2, stride=1)
 
         self.conv2 = torch.nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, padding=2, stride=2)
-        # self.maxpool2=torch.nn.MaxPool1d(kernel_size=1,stride=2)
+
 
         self.conv3 = torch.nn.Conv1d(in_channels=32, out_channels=29, kernel_size=5, padding=2, stride=2)
 
         self.BiLSTM_ATT=Model_LSTM_MutilHeadSelfAttention(input_size=input_size,hidden_size=hidden_size,num_layers=num_layers)
 
-        # 定义全连接层：
         self.flatten = torch.nn.Flatten()
-        # 定义感知层；
         self.linear1 = torch.nn.Linear(in_features=29 * 136, out_features=128)
         self.linear2 = torch.nn.Linear(in_features=128, out_features=nums_classes)
 
@@ -159,22 +152,23 @@ class KcrNet(nn.Module):
 
         inputs=x
 
-        x = torch.permute(x, [0, 2, 1]) # 对数据进行重新排列
+        x = torch.permute(x, [0, 2, 1]) #permute
 
-        # 第一层卷积
+        # first conv1d
         x = self.conv1(x)
         x = F.relu(x)
         x = self.dropout1(x)
 
         First_outputs=x
 
-        # 第二层卷积
+        # second conv1d
         x = self.conv2(x)
         x = F.relu(x)
 
         x = self.dropout2(x)
         Second_outputs=x
 
+        #third conv1d
         x = self.conv3(x)
         x = F.relu(x)
         x = self.dropout2(x)
@@ -187,11 +181,10 @@ class KcrNet(nn.Module):
         total_outputs=torch.cat([x,BiLSTM_outputs],dim=-1)
         # print("total_outputs shape:",total_outputs.shape)
 
-        # 全连接层：
         x = self.flatten(total_outputs)
 
         x = self.linear1(x)
-        x = F.relu(x)  # 激活函数
+        x = F.relu(x) # activate function
         Linear_output=x
 
         x = self.linear2(x)
@@ -202,11 +195,8 @@ import numpy as np
 import warnings
 warnings.filterwarnings("ignore")
 
-epochs = 30
 batch_size = 128
 learn_rate = 0.001
-
-
 base_fpr = np.linspace(0, 1, 101)
 base_fpr[-1] = 1.0
 
@@ -221,7 +211,7 @@ model.load_state_dict(torch.load(model_path,map_location=torch.device("cuda:0" i
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 
-# t-SNE可视化：testing
+# t-SNE
 test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=True, drop_last=False)
 
 test_inputs_features = []
@@ -320,7 +310,7 @@ plt.xlabel('Dimension1', fontweight='bold')
 l1 = plt.Line2D(range(0), range(0), marker='o', color='r', linestyle='')
 l2 = plt.Line2D(range(0), range(0), marker='o', color='skyblue', linestyle='')
 plt.legend((l1, l2), ('Kcr', 'Non-Kcr'), loc='upper right', numpoints=1)
-plt.savefig("../figures/Input-Layer-test-visual.png", dpi=600)  # 保存图片，dpi设置分辨率
+plt.savefig("../figures/Input-Layer-test-visual.png", dpi=600)
 plt.show()
 
 # test : First_Conv1D_features
@@ -369,7 +359,7 @@ plt.show()
 # l2 = plt.Line2D(range(0), range(0), marker='o', color='skyblue', linestyle='')
 # plt.legend((l1, l2), ('Kcr', 'Non-Kcr'), loc='upper right', numpoints=1)
 #
-# plt.savefig("../figures/3_Conv1D-Layer-test-visual.png", dpi=600)  # 保存图片，dpi设置分辨率
+# plt.savefig("../figures/3_Conv1D-Layer-test-visual.png", dpi=600)
 # plt.show()
 
 
@@ -394,7 +384,7 @@ l1 = plt.Line2D(range(0), range(0), marker='o', color='r', linestyle='')
 l2 = plt.Line2D(range(0), range(0), marker='o', color='skyblue', linestyle='')
 plt.legend((l1, l2), ('Kcr', 'Non-Kcr'), loc='upper right', numpoints=1)
 
-plt.savefig("../figures/Flatten_outputs-test-visual.png", dpi=600)  #保存图片，dpi设置分辨率
+plt.savefig("../figures/Flatten_outputs-test-visual.png", dpi=600)
 plt.show()
 
 # test :Linear layer
@@ -418,7 +408,7 @@ l1 = plt.Line2D(range(0), range(0), marker='o', color='r', linestyle='')
 l2 = plt.Line2D(range(0), range(0), marker='o', color='skyblue', linestyle='')
 plt.legend((l1, l2), ('Kcr', 'Non-Kcr'), loc='upper right', numpoints=1)
 
-plt.savefig("../figures/Linear-Layer-test-visual.png", dpi=600)  # 保存图片，dpi设置分辨率
+plt.savefig("../figures/Linear-Layer-test-visual.png", dpi=600)  #save fig
 plt.show()
 
 

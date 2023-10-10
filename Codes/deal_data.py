@@ -1,6 +1,6 @@
 
 """
-split train Datasets and  ind_test datasest 7:3
+split the training and test sets with 7:3
 """
 from sklearn.model_selection import train_test_split
 
@@ -28,10 +28,11 @@ def deal_data(filename,isPositive=True):
 
 
 """
-处理数据，将数据转为csv的文件格式：
+deal data ,Convert to csv file
 """
 def get_data(seq_list,label_list,save_train_filepath,save_test_path):
-    # 进行7 ：3划分数据集
+
+    # Divide the data set 7:3
     # with open(save_filepath,mode='w+',encoding='utf-8') as f:
 
     X=seq_list
@@ -61,10 +62,10 @@ if __name__ == '__main__':
     # CommonWheats_Pos_data_filepath = '../Datasets/Output_Cd-hit_40%/commonWheatPos_40.fasta'
     # CommonWheats_Neg_data_filepath = '../Datasets/Output_Cd-hit_40%/commonWheatNeg_40.fasta'
 
-    # 小麦正样本：
+    # wheat positive：
     # commonWheats_seq_Pos_list,commonWheats_label_Pos_list=deal_data(CommonWheats_Pos_data_filepath,isPositive=True)
     # get_data(commonWheats_seq_Pos_list,commonWheats_label_Pos_list,save_train_filepath="../Csv/commonWheats_train_Post.Csv",save_test_path="../Csv/commonWheats_test_Pos.Csv")
-    # #小麦负样本：
+    # wheat negative：
     # commonWheats_seq_Neg_list, commonWheats_label_Neg_list = deal_data(CommonWheats_Neg_data_filepath, isPositive=False)
     # get_data(commonWheats_seq_Neg_list, commonWheats_label_Neg_list, save_train_filepath="../Csv/commonWheats_train_Neg.Csv",save_test_path="../Csv/commonWheats_test_Neg.Csv")
 
@@ -83,10 +84,10 @@ if __name__ == '__main__':
 
     # Rice_Pos_data_filepath = '../Datasets/Output_Cd-hit_40%/ricePos_40.fasta'
     # Rice_Neg_data_filepath = '../Datasets/Output_Cd-hit_40%/riceNeg_40.fasta'
-    # # 水稻正样本：
+    # ric positive：
     # rice_seq_Pos_list, rice_label_Pos_list = deal_data(Rice_Pos_data_filepath, isPositive=True)
     # get_data(rice_seq_Pos_list, rice_label_Pos_list, save_train_filepath="../Csv/rice_train_Pos.Csv", save_test_path="../Csv/rice_test_Pos.Csv")
-    # # 水稻负样本：
+    # rice negative：
     # rice_seq_Neg_list, rice_label_Neg_list = deal_data(Rice_Neg_data_filepath, isPositive=False)
     # get_data(rice_seq_Neg_list, rice_label_Neg_list, save_train_filepath="../Csv/rice_train_Neg.Csv", save_test_path="../Csv/rice_test_Neg.Csv")
     #
@@ -94,13 +95,13 @@ if __name__ == '__main__':
     # Tabacum_Pos_data_filepath = '../Datasets/Output_Cd-hit_40%/tabacumPos_40.fasta'
     # Tabacum_Neg_data_filepath = '../Datasets/Output_Cd-hit_40%/tabacumNeg_40.fasta'
 
-    # 烟草positive：
+    # Tabacum positive：
 
     # tabacum_seq_Pos_list, tabacum_label_Pos_list = deal_data(Tabacum_Pos_data_filepath, isPositive=True)
     # get_data(tabacum_seq_Pos_list, tabacum_label_Pos_list, save_train_filepath="../Csv/tabacum_train_Pos.Csv",save_test_path="../Csv/tabacum_test_Pos.Csv")
 
 
-    # 烟草negative：
+    # Tabacum negative：
     # tabacum_seq_Neg_list, tabacum_label_Neg_list = deal_data(Tabacum_Neg_data_filepath, isPositive=False)
     # get_data(tabacum_seq_Neg_list, tabacum_label_Neg_list, save_train_filepath="../Csv/tabacum_train_Neg.Csv", save_test_path="../Csv/tabacum_test_Neg.Csv")
 

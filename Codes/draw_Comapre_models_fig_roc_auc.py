@@ -1,5 +1,5 @@
 """
-draw ML的ROC_ACU曲线图
+draw CML的ROC_ACU曲线图
 
 """
 import matplotlib.pyplot as plt
@@ -35,7 +35,6 @@ ourModel_y_test_score=np.load('../np_weights/PlantNh-Kcr_y_test_score.npy').toli
 
 
 #calculate roc_auc
-
 fpr1,tpr1,_=roc_curve(RF_BE_y_test_true,RF_BE_y_test_score)
 RF_BE_roc_auc=auc(fpr1,tpr1)
 
@@ -73,7 +72,7 @@ plt.plot(fpr7,tpr7,label="PlantNh-Kcr (AUC={:.4f})".format(PlantNh_Kcr_roc_auc),
 
 plt.plot([0,1],[0,1],lw=1,alpha=0.8,linestyle='--',color='c')
 
-plt.xlim([-0.05, 1.05])#横竖增加一点长度 以便更好观察图像
+plt.xlim([-0.05, 1.05])
 plt.ylim([-0.05, 1.05])
 
 plt.title('ROC curve')

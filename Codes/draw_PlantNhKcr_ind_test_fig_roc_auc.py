@@ -1,9 +1,8 @@
 """
-draw PlantNh-Kcr  ind_test 的ROC_ACU曲线图
-
+draw the test AUC for PlantNh-Kcr
 """
 import matplotlib.pyplot as plt
-from sklearn.metrics import roc_curve, auc  ###计算roc和auc
+from sklearn.metrics import roc_curve, auc
 import numpy as np
 
 
@@ -19,7 +18,7 @@ plt.plot(fpr1,tpr1,label="PlantNh-Kcr (AUC={:.4f})".format(PlantNh_Kcr_roc_auc),
 
 plt.plot([0,1],[0,1],lw=1,alpha=0.8,linestyle='--',color='c')
 
-plt.xlim([-0.05, 1.05])#横竖增加一点长度 以便更好观察图像
+plt.xlim([-0.05, 1.05])
 plt.ylim([-0.05, 1.05])
 
 plt.title('ROC curve')
