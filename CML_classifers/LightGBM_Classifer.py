@@ -1,5 +1,8 @@
 
+"""
 
+LightGBM Classifer
+"""
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import accuracy_score,auc,roc_auc_score,roc_curve
@@ -48,8 +51,6 @@ def get_Binary_encoding(data):
 
     for seq,label in data:
 
-        # print(seq)
-        # print(label)
         one_code=[]
         for i in seq:
             vector=[0]*21
@@ -81,14 +82,11 @@ def get_AAC_encoding(data):
     y=[]
 
     for seq,label in data:
-
-        # print(seq)
-        # print(label)
         one_code=[]
         counter=Counter(seq)
         # print(counter)
         for key in counter:
-            # 计算概率
+
             counter[key] = round(counter[key] / len(seq), 3)
 
         for item in AA_Seq:
@@ -115,7 +113,7 @@ def get_EGAAC_encoding(data):
 
     X=[]
     y=[]
-    """分为5组"""
+    """split to five group"""
     group = {
         'Aliphatic group': 'GAVLMI',
         'Aromatic groups': 'FYW',
@@ -128,19 +126,16 @@ def get_EGAAC_encoding(data):
 
     for seq,label in data:
 
-        # print(seq)
-        # print(label)
         one_code=[]
         groupCount_dict = {}
         counter=Counter(seq)
         # print(counter)
 
         for key in groupKeys:
-            #遍历每一组:统计每组的个数
+
             for aa in group[key]:
                 groupCount_dict[key]=groupCount_dict.get(key,0)+counter[aa]
 
-        #计算每组的概率：
         for key in groupKeys:
             one_code.append(round(groupCount_dict[key] / len(seq), 3))
 
@@ -151,7 +146,6 @@ def get_EGAAC_encoding(data):
     X=np.array(X)
     # print(X.shape)
     n,dim=X.shape #(n,5)
-    #
     # # reshape
     print("new X shape :",X.shape)
     #
@@ -176,7 +170,7 @@ def get_AAindex_encode(data):
     AAindex = []
 
     for i in records:
-        # print(i.rstrip().split()[0])  #得到AAindex的names
+        # print(i.rstrip().split()[0])  #get AAindex name
         AAindex_names.append(i.rstrip().split()[0] if i.rstrip() != '' else None)
         AAindex.append(i.rstrip().split()[1:] if i.rstrip() != '' else None)
 
@@ -187,12 +181,10 @@ def get_AAindex_encode(data):
         tempAAindex = []
 
         for p in props:
-            # 如果29种的一种存在
             if AAindex_names.index(p) != -1:
                 tempAAindex_names.append(p)
                 tempAAindex.append(AAindex[AAindex_names.index(p)])
 
-        # 如果找到了，就将前29种的性质直接替代AAindx；
         if len(tempAAindex_names) != 0:
             AAindex_names = tempAAindex_names
             AAindex = tempAAindex
@@ -207,12 +199,12 @@ def get_AAindex_encode(data):
         one_code=[]
         for aa in seq:
             if aa == 'X':
-                for aaindex in AAindex:  # 为X 全部赋值为0
+                for aaindex in AAindex:
                     one_code.append(0)
                 continue
             for aaindex in AAindex:
                 # print(type(aaindex[seq_index.get(aa)]))
-                one_code.append(float(aaindex[seq_index.get(aa)]))  # 添加存在的aaindex;
+                one_code.append(float(aaindex[seq_index.get(aa)]))  # append AAindex;
         X.append(one_code) #(29,29)
         # print(one_code)
         y.append(int(label))
@@ -257,7 +249,6 @@ def get_BLOSUM62_encoding(data):
         'X': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # -
     }
 
-    # 对blosum62取均值：
     for key in blosum62:
         for index,value in enumerate(blosum62[key]):
             blosum62[key][index]=round((value + 4) / 15,3)
@@ -269,8 +260,6 @@ def get_BLOSUM62_encoding(data):
         for aa in seq:
             # print(blosum62.get(aa))
             one_code.extend(blosum62.get(aa)) #(29,21)
-
-        # print("one_code:",one_code)
 
         X.append(one_code)
         y.append(int(label))
@@ -371,8 +360,8 @@ def LightGBM_Classifer(train_data,ind_test_data):
         train_acc = accuracy_score(this_train_y, y_train_pred)
         valid_acc = accuracy_score(this_valid_y, y_valid_pred)
 
-        print("训练集准确率: {:.2f}%".format(train_acc * 100))
-        print("验证集准确率: {:.2f}%".format(valid_acc * 100))
+        print("the training ACC: {:.2f}%".format(train_acc * 100))
+        print("the valid ACC: {:.2f}%".format(valid_acc * 100))
 
         #acu:
         y_true.append(this_valid_y)
@@ -387,7 +376,7 @@ def LightGBM_Classifer(train_data,ind_test_data):
 
         #混淆矩阵：
         res=confusion_matrix(y_valid_true_label,y_valid_pred_label)
-        print("混淆矩阵:",res)
+        print("confusion matrix values :",res)
 
         TP += ((y_valid_true_label == 1) & (y_valid_pred_label == 1)).sum().item()
         FP += ((y_valid_true_label == 1) & (y_valid_pred_label == 0)).sum().item()
@@ -404,8 +393,8 @@ def LightGBM_Classifer(train_data,ind_test_data):
         train_ACC.append(ACC)
         train_MCC.append(MCC)
 
-        print("Train TP is {},FP is {},TN is {},FN is {}".format(TP, FP, TN, FN))
-        print("Train SN is {},SP is {},ACC is {},MCC is {}".format(SN, SP, ACC, MCC))
+        print("Training TP is {},FP is {},TN is {},FN is {}".format(TP, FP, TN, FN))
+        print("Training SN is {},SP is {},ACC is {},MCC is {}".format(SN, SP, ACC, MCC))
 
         fold+=1
 
@@ -415,7 +404,7 @@ def LightGBM_Classifer(train_data,ind_test_data):
     train_params.append(np.mean(train_MCC))
 
     np.save("../CML_weights/LGB_5kfold_BLOSUM62_params.npy", train_params)
-    print("Train Mean : SN is {},SP is {},ACC is {},MCC is {}".format(np.mean(train_SN), np.mean(train_SP), np.mean(train_ACC),np.mean(train_MCC)))
+    print("Train ing Mean : SN is {},SP is {},ACC is {},MCC is {}".format(np.mean(train_SN), np.mean(train_SP), np.mean(train_ACC),np.mean(train_MCC)))
     print("ind_test start ...")
 
 
@@ -425,12 +414,12 @@ def LightGBM_Classifer(train_data,ind_test_data):
 
     fpr,tpr,_=roc_curve(y_true,y_score)
     valid_auc=auc(fpr,tpr)
-    print("valid auc :",valid_auc)
+    print("valid AUC :",valid_auc)
 
     X_test, y_test = ind_test_data
     y_test_pred=lgb_clf.predict(X_test)
     test_acc=accuracy_score(y_test,y_test_pred)
-    print("测试集准确率 {:.2f}:".format(test_acc * 100))
+    print("the testing ACC {:.2f}:".format(test_acc * 100))
 
 
     # ind test auc:
@@ -439,7 +428,7 @@ def LightGBM_Classifer(train_data,ind_test_data):
     np.save('../CML_weights/LGB_BLOSUM62_y_test_true.npy', y_test)
     np.save('../CML_weights/LGB_BLOSUM62_y_test_score.npy', lgb_clf.predict_proba(X_test)[:, 1])
 
-    print("test auc :",test_auc)
+    print("test AUC :",test_auc)
 
     #calculate SN、SP、ACC、MCC
 
