@@ -12,14 +12,12 @@ import numpy as np
 from sklearn import metrics
 from sklearn.metrics import roc_auc_score, roc_curve, auc
 
-# 对数据进行二进制编码：
+
 Amino_acid_sequence = 'ACDEFGHIKLMNPQRSTVWYX'
 
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-
-# 对数据集进行编码的操作：
 def create_encode_dataset(filepath):
     data_list = []
     result_seq_datas = []
@@ -34,13 +32,12 @@ def create_encode_dataset(filepath):
         # print(len(data_list))
 
     for data in data_list:
-        # 取一条氨基酸序列和对应的lable；
-        code = []  # 一条序列
-        # seq_index=1
+
+        code = []
 
         result_seq_labels.append(int(data[1]))
         for seq in data[0]:
-            one_code = []  # 一条序列
+            one_code = []  #
             for amino_acid_index in Amino_acid_sequence:
                 if amino_acid_index == seq:
                     flag = 1
@@ -57,11 +54,8 @@ def create_encode_dataset(filepath):
     return np.array(result_seq_datas), np.array(result_seq_labels, dtype=np.int64)
 
 
-# 数据集的文件路径：
 train_filepath = '../Datasets/train.csv'
 test_filepath = '../Datasets/ind_test.csv'
-
-
 
 
 import numpy as np
@@ -71,7 +65,6 @@ test_dataset, test_labels = create_encode_dataset(test_filepath)
 print(test_dataset.shape)
 
 
-# 构建数据集：
 class MyDataset(Dataset):
 
     def __init__(self, datas, labels):
@@ -88,7 +81,6 @@ class MyDataset(Dataset):
         return len(self.datas)
 
 
-# 形成数据集：tuple
 train_set = MyDataset(train_dataset, train_labels)
 test_set = MyDataset(test_dataset, test_labels)
 
@@ -97,10 +89,8 @@ class KcrNet(nn.Module):
 
     def __init__(self, input_classes=21, nums_classes=2):
         super(KcrNet, self).__init__()
-        # 定义卷积层：
+
         self.conv1 = torch.nn.Conv1d(in_channels=input_classes, out_channels=32, kernel_size=5, padding=2, stride=1)
-        # 定义pooling层：
-        # self.maxpool1=torch.nn.MaxPool1d(kernel_size=1,stride=2)
 
         self.conv2 = torch.nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, padding=2, stride=2)
         # self.maxpool2=torch.nn.MaxPool1d(kernel_size=1,stride=2)
@@ -108,9 +98,8 @@ class KcrNet(nn.Module):
         self.conv3 = torch.nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, padding=2, stride=2)
         # self.maxpool3=torch.nn.MaxPool1d(kernel_size=3,stride=1)
         # self.attention=QKV_SelfAttention()
-        # 定义全连接层：
         self.flatten = torch.nn.Flatten()
-        # 定义感知层；
+
         self.linear1 = torch.nn.Linear(in_features=32 * 8, out_features=128)
         self.linear2 = torch.nn.Linear(in_features=128, out_features=nums_classes)
 
@@ -120,15 +109,14 @@ class KcrNet(nn.Module):
     def forward(self, x):
 
         inputs = x
-        x = torch.permute(x, [0, 2, 1])  # 对数据进行重新排列
-        # 第一层卷积
+        x = torch.permute(x, [0, 2, 1])
+
         x = self.conv1(x)
         x = F.relu(x)
         # x=self.maxpool1(x)
         x = self.dropout1(x)
         First_outputs = x
 
-        # 第二层卷积
         x = self.conv2(x)
         x = F.relu(x)
         # x=self.maxpool2(x)
@@ -140,11 +128,10 @@ class KcrNet(nn.Module):
         x = self.dropout2(x)
         Third_outputs = x
 
-        # 全连接层：
         x = self.flatten(x)
 
         x = self.linear1(x)
-        x = F.relu(x)  # 激活函数
+        x = F.relu(x)
         Linear_output = x
         x = self.linear2(x)
         return (inputs,First_outputs, Second_outputs, Third_outputs,Linear_output), x
@@ -168,7 +155,6 @@ base_fpr[-1] = 1.0
 
 test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=True, drop_last=False)
 
-#实例化模型和加载模型
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 model = KcrNet()
@@ -196,7 +182,6 @@ test_base_fpr[-1] = 1.0
 
 
 eval_SN_SP_ACC_MCC=[]
-# 独立数据集测试：
 model.eval()
 with torch.no_grad():
     test_acc = []
@@ -231,7 +216,6 @@ with torch.no_grad():
         TN += ((y_true_label == 0) & (y_test_label == 0)).sum().item()
         FN += ((y_true_label == 0) & (y_test_label == 1)).sum().item()
 
-        # 计算损失值：
         loss = F.cross_entropy(y_test_pred, y_data)
 
         #calculate acc
@@ -239,8 +223,6 @@ with torch.no_grad():
         #calculate auc
         auc = metrics.roc_auc_score(y_data[:].detach().cpu().numpy(), y_test_pred[:, 1].detach().cpu().numpy())
 
-
-        # 计算得分
         y_test_true.append(y_data[:].detach().cpu().numpy())
         y_test_score.append(y_test_pred[:, 1].detach().cpu().numpy())
 
@@ -250,11 +232,9 @@ with torch.no_grad():
 
     avg_acc, avg_loss, avg_auc = np.mean(test_acc), np.mean(test_loss), np.mean(test_auc)
 
-    # 合并数据：
     y_test_true = np.concatenate(y_test_true)
     y_test_score = np.concatenate(y_test_score)
 
-    # 保存真实值和预测值的值
     np.save('../np_weights/CNN(BE)_y_test_true.npy', y_test_true)
     np.save('../np_weights/CNN(BE)_y_test_score.npy', y_test_score)
 
@@ -274,7 +254,7 @@ with torch.no_grad():
 
     # eval_SN_SP_ACC_MCC=[]
 
-    # 计算SN，SP，ACC，MCC
+    #SN，SP，ACC，MCC
     SN = TP / (TP + FN)
     SP = TN / (TN + FP)
     ACC = (TP + TN) / (TP + TN + FP + FN)

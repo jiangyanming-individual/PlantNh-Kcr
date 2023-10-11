@@ -10,7 +10,6 @@ import torch.nn as nn
 from torch.utils.data import Dataset,DataLoader,Subset
 
 
-#构造词典：
 AA_aaindex = 'ACDEFGHIKLMNPQRSTVWY'
 
 word2id_dict={'X':0}
@@ -24,7 +23,7 @@ test_filepath= '../Datasets/ind_test.csv'
 # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 device='cpu'
 
-# 加载数据集,返回seq,label
+# return squence and label
 def load_data(file_path):
     data = []
     with open(file_path, mode='r', encoding='utf-8') as f:
@@ -44,8 +43,7 @@ test_dataset=load_data(test_filepath)
 # print(train_dataset)
 
 
-# 自定义MyDataset
-# 构建Dataset数据集：将词转为id
+# word to id
 class MyDataset(Dataset):
 
     def __init__(self, examples, word2id_dict):
@@ -53,22 +51,22 @@ class MyDataset(Dataset):
         self.word2id_dict = word2id_dict
         self.examples = self.words_to_id(examples)
 
-    # 将语句转为id的形式：并返回seq,label;
+    # return squence and label
     def words_to_id(self, examples):
         temp_example = []
 
         for i, example in enumerate(examples):
             seq, label = example
-            # 词转为id;如果单词不存在，直接使用unk填充：
+            # use X to fill in the missing
             seq = [self.word2id_dict.get(AA, self.word2id_dict.get('X')) for AA in seq]
-            # 标签
+            # label
             label = int(label)
             temp_example.append((seq, label))
 
         return temp_example
 
     def __getitem__(self, idx):
-        # 将单词转换为id
+
         seq, label = self.examples[idx]
 
         return seq, label
@@ -94,7 +92,7 @@ class Model_LSTM(nn.Module):
         # dict size：
         self.vocab_size = vocab_size
 
-        # embedding_size层大小：
+        # embedding_size
         self.embedding_size = embedding_size
 
         # hidden_size：
@@ -105,7 +103,7 @@ class Model_LSTM(nn.Module):
         # LSTM layers：
         self.num_layers = num_layers
 
-        # 定义embedding层：
+        #embedding layer
         self.embedding = nn.Embedding(
             vocab_size, embedding_size
         )
@@ -125,7 +123,7 @@ class Model_LSTM(nn.Module):
 
 
     def forward(self, inputs):
-        input_ids = inputs  # (词的id,有效的长度)：
+        input_ids = inputs
 
         # embedding layer;
         embeded_input = self.embedding(input_ids) #(batch_size,seq_len)
@@ -146,20 +144,19 @@ class Model_LSTM(nn.Module):
         return (embeded_output, Bilstm_outputs), outputs
 
 
-# 模型训练：
-
+# training model
 warnings.filterwarnings("ignore")
-# 指定训练轮次
+# epoch
 num_epochs = 30
-# 指定学习率
+# learning rate
 learning_rate = 0.001
-# 指定embedding的数量为词表长度
+# the length of embedding
 vocab_size = len(word2id_dict)
 
-# embedding向量的维度
+# embedding size
 embedding_size = 10
 
-# LSTM网络隐状态向量的维度
+# the hidden size of LSTM network
 hidden_size = 64
 num_classes = 2
 
@@ -187,19 +184,14 @@ total_MCC = []
 
 def train(model, train_loader,valid_loader,device):
     print("train is start...")
-    # 优化器：
-    optimizer = torch.optim.Adam(params=model.parameters(),lr=learning_rate)
-    # 指定损失函数
 
-    # loss_fn = FocalLoss(alpha=0.83, gamma=2)
-    # 模型训练：
+    optimizer = torch.optim.Adam(params=model.parameters(),lr=learning_rate)
     model.train()
     for epoch in range(num_epochs):
 
         epoch_loss = []
         epoch_acc = []
         epoch_auc = []
-        # print("第{}个epoch:".format(epoch))
         for batch_id, data in enumerate(train_loader):
 
             # print(data[0])
@@ -223,8 +215,6 @@ def train(model, train_loader,valid_loader,device):
 
             # loss = loss_fn(y_predict, y_data)
             # print("loss:",loss)
-            # 指定评估函数：
-            # acc = torch.metric.accuracy(y_predict, y_data)
             acc=metrics.accuracy_score(y_data.detach().cpu().numpy(),torch.argmax(y_predict,dim=1).detach().cpu().numpy())
             # print("acc:",acc)
 
@@ -282,7 +272,7 @@ def train(model, train_loader,valid_loader,device):
             y_predict_label = torch.argmax(y_valid_pred, dim=1)
             # print("y_predict_label",y_predict_label)
 
-            # 计算损失值：
+            #calculate loss
             loss = F.cross_entropy(y_valid_pred, y_data)
 
             # loss = loss_fn(y_valid_pred, y_data)
@@ -293,7 +283,7 @@ def train(model, train_loader,valid_loader,device):
             auc = metrics.roc_auc_score(y_data[:].detach().cpu().numpy(), y_valid_pred[:, 1].detach().cpu().numpy())
 
 
-            # 计算得分
+            # calculate score
             y_true.append(y_data[:].detach().cpu().numpy())
             y_score.append(y_valid_pred[:, 1].detach().cpu().numpy())
 
@@ -312,7 +302,7 @@ def train(model, train_loader,valid_loader,device):
 
         avg_acc, avg_loss, avg_auc = np.mean(valid_acc), np.mean(valid_loss), np.mean(valid_auc)
 
-        # 合并数据：
+        # concate data
         y_true = np.concatenate(y_true)
         y_score = np.concatenate(y_score)
 
@@ -333,7 +323,7 @@ def train(model, train_loader,valid_loader,device):
 
         np.save('../np_weights/BiLSTM(WE)_y_train.npy',y_true)
         np.save('../np_weights/BiLSTM(WE)_y_train_score.npy',y_score)
-        # 计算SN，SP，ACC，MCC
+        # calculate SN，SP，ACC，MCC
 
         SN = TP / (TP + FN)
         SP = TN / (TN + FP)
@@ -350,12 +340,12 @@ def train(model, train_loader,valid_loader,device):
 
 
 
-# 进行五折交叉验证：
+# five-fold cross-validation
 from sklearn.model_selection import KFold
 from sklearn import metrics
 from torch.utils.data import Subset
 
-# 定义DataLoader
+# define DataLoader
 from torch.utils.data import DataLoader
 
 kf = KFold(n_splits=5, shuffle=True)
@@ -365,29 +355,26 @@ for train_index, valid_index in kf.split(train_set):
     print(f"第{fold}次交叉验证")
 
     batch_size = 128
-    # 创建训练集和验证集：
+    #create training and valid sets
 
     train_dataset = Subset(train_set, train_index)
     valid_dataset = Subset(train_set, valid_index)
 
 
-    # 形成DataLoader:
+    # DataLoader:
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, drop_last=False)
     valid_loader = DataLoader(valid_dataset, batch_size=batch_size, shuffle=True, drop_last=False)
 
 
     # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-    # 实例化总的模型：
+    # use model
     model = Model_LSTM(vocab_size, embedding_size, hidden_size, num_classes, num_layers)
 
     model.to(device)
     train(model, train_loader,valid_loader,device)
 
-
-    # save tpr,fpr,auc
-
-    # 保存模型：
+    #save model
     torch.save(model.state_dict(), '../DL_weights/'+str(fold) + '_BiLSTM(WE)_kfold_model.pth'.format(fold))
 
     fold += 1
@@ -397,7 +384,7 @@ np.save('../np_weights/BiLSTM(WE)_roc_auc.npy', roc_auc)
 np.save('../np_weights/BiLSTM(WE)_roc.npy', roc)
 
 
-#五倍交叉验证 SN、SP、ACC、MCC
+#the results of SN, SP, ACC, MCC on five-fold cross-validation
 mean_SN=np.mean(total_SN)
 mean_SP=np.mean(total_SP)
 mean_ACC=np.mean(total_ACC)
@@ -410,25 +397,25 @@ kfold_SN_SP_ACC_MCC.append(mean_SP)
 kfold_SN_SP_ACC_MCC.append(mean_ACC)
 kfold_SN_SP_ACC_MCC.append(mean_MCC)
 
-#平均的五倍交叉验证结果：
+#results
 np.save('../np_weights/BiLSTM(WE)_SN_SP_ACC_MCC.npy', kfold_SN_SP_ACC_MCC)
 print("5kfold: SN is: {}, SP is: {}, ACC is: {},MCC is: {}".format(mean_SN,mean_SP,mean_ACC,mean_MCC))
 
 
 
-# 五折交叉验证可视化：
+# the visualization of five-fold cross-validation
 
 def Kf_show(plt, base_fpr, roc, roc_auc):
-    # 五折交叉验证图：
+
     for i, item in enumerate(roc):
         fpr, tpr = item
         plt.plot(fpr, tpr, label="ROC fold {} (AUC={:.4f})".format(i + 1, roc_auc[i]), lw=1, alpha=0.3)
 
-    # 求平均值：mean
+    # mean
     plt.plot(base_fpr, np.average(tprs, axis=0),
              label=r'Mean ROC(AUC=%0.2f $\pm$ %0.2f)' % (np.mean(roc_auc), np.std(roc_auc)),
              lw=1, alpha=0.8, color='b')
-    # 基准线：
+    # base line
     plt.plot([0, 1], [0, 1], linestyle='--', lw=1, alpha=0.8, color='c')
     plt.xlim([-0.05, 1.05])
     plt.ylim([-0.05, 1.05])
@@ -446,17 +433,17 @@ Kf_show(plt, base_fpr, roc, roc_auc)
 ############################################
 # total dataset to training
 warnings.filterwarnings("ignore")
-# 指定训练轮次
+# epoch
 num_epochs = 30
-# 指定学习率
+# learning rate
 learning_rate = 0.001
-# 指定embedding的数量为词表长度
+# the length of embedding
 vocab_size = len(word2id_dict)
 
-# embedding向量的维度
+# embedding size
 embedding_size = 10
 
-# LSTM网络隐状态向量的维度
+# the hidden size of LSTM network
 hidden_size = 64
 num_classes = 2
 
@@ -483,19 +470,14 @@ total_MCC = []
 
 def total_train(model, train_loader, device):
     print("train is start...")
-    # 优化器：
-    optimizer = torch.optim.Adam(params=model.parameters(), lr=learning_rate)
-    # 指定损失函数
 
-    # loss_fn = FocalLoss(alpha=0.83, gamma=2)
-    # 模型训练：
+    optimizer = torch.optim.Adam(params=model.parameters(), lr=learning_rate)
     model.train()
     for epoch in range(num_epochs):
 
         epoch_loss = []
         epoch_acc = []
         epoch_auc = []
-        # print("第{}个epoch:".format(epoch))
         for batch_id, data in enumerate(train_loader):
 
             # print(data[0])
@@ -518,12 +500,8 @@ def total_train(model, train_loader, device):
 
             # loss = loss_fn(y_predict, y_data)
             # print("loss:",loss)
-            # 指定评估函数：
-            # acc = torch.metric.accuracy(y_predict, y_data)
             acc = metrics.accuracy_score(y_data.detach().cpu().numpy(),
                                          torch.argmax(y_predict, dim=1).detach().cpu().numpy())
-            # print("acc:",acc)
-
             auc = metrics.roc_auc_score(y_data.detach().cpu().numpy(), y_predict[:, 1].detach().cpu().numpy())
 
             # print("auc:",auc)
@@ -548,25 +526,23 @@ def total_train(model, train_loader, device):
         print("[train:avg_acc is: {},avg_loss is: {},avg_auc is: {}]".format(avg_acc, avg_loss, avg_auc))
 
         if (epoch + 1) == num_epochs:
-            # 保存模型：
+            #save model
             torch.save(model.state_dict(), '../DL_weights/BiLSTM(WE)-FinalWeight.pth')
 
 
 from sklearn import metrics
-# 定义DataLoader
+# DataLoader
 from torch.utils.data import DataLoader
 
 batch_size = 128
 
-# 形成DataLoader:
 train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, drop_last=False)
 # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-# 实例化总的模型：
 model = Model_LSTM(vocab_size, embedding_size, hidden_size, num_classes, num_layers)
 model.to(device)
 
-# 训练model
+# training model
 total_train(model, train_loader, device)
 
 

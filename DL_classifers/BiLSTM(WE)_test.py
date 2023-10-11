@@ -10,7 +10,7 @@ import torch.nn as nn
 from torch.utils.data import Dataset,DataLoader,Subset
 
 
-#构造词典：
+
 AA_aaindex = 'ACDEFGHIKLMNPQRSTVWY'
 
 word2id_dict={'X':0}
@@ -20,8 +20,7 @@ for i in range(len(AA_aaindex)):
 
 # word2id_dict
 
-
-#使用均衡数据集的文件路径：
+#the filepath of training and test sets
 
 train_filepath= '../Datasets/train.csv'
 test_filepath= '../Datasets/ind_test.csv'
@@ -29,7 +28,6 @@ test_filepath= '../Datasets/ind_test.csv'
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-# 加载数据集,返回seq,label
 def load_data(file_path):
     data = []
     with open(file_path, mode='r', encoding='utf-8') as f:
@@ -49,8 +47,6 @@ test_dataset=load_data(test_filepath)
 # print(train_dataset)
 
 
-# 自定义MyDataset
-# 构建Dataset数据集：将词转为id
 class MyDataset(Dataset):
 
     def __init__(self, examples, word2id_dict):
@@ -58,22 +54,21 @@ class MyDataset(Dataset):
         self.word2id_dict = word2id_dict
         self.examples = self.words_to_id(examples)
 
-    # 将语句转为id的形式：并返回seq,label;
+
     def words_to_id(self, examples):
         temp_example = []
 
         for i, example in enumerate(examples):
             seq, label = example
-            # 词转为id;如果单词不存在，直接使用unk填充：
+
             seq = [self.word2id_dict.get(AA, self.word2id_dict.get('X')) for AA in seq]
-            # 标签
             label = int(label)
             temp_example.append((seq, label))
 
         return temp_example
 
     def __getitem__(self, idx):
-        # 将单词转换为id
+
         seq, label = self.examples[idx]
 
         return seq, label
@@ -99,7 +94,7 @@ class Model_LSTM(nn.Module):
         # dict size：
         self.vocab_size = vocab_size
 
-        # embedding_size层大小：
+        # embedding_size
         self.embedding_size = embedding_size
 
         # hidden_size：
@@ -110,7 +105,7 @@ class Model_LSTM(nn.Module):
         # LSTM layers：
         self.num_layers = num_layers
 
-        # 定义embedding层：
+        #embedding layer
         self.embedding = nn.Embedding(
             vocab_size, embedding_size
         )
@@ -130,7 +125,7 @@ class Model_LSTM(nn.Module):
 
 
     def forward(self, inputs):
-        input_ids = inputs  # (词的id,有效的长度)：
+        input_ids = inputs
 
         # embedding layer;
         embeded_input = self.embedding(input_ids) #(batch_size,seq_len)
@@ -154,17 +149,17 @@ class Model_LSTM(nn.Module):
 # 模型训练：
 
 warnings.filterwarnings("ignore")
-# 指定训练轮次
+#epochs
 num_epochs = 30
-# 指定学习率
+# learning rate
 learning_rate = 0.001
-# 指定embedding的数量为词表长度
+# the length of embedding
 vocab_size = len(word2id_dict)
 
-# embedding向量的维度
+# embedding size
 embedding_size = 10
 
-# LSTM网络隐状态向量的维度
+# the hidden size of LSTM network
 hidden_size = 64
 num_classes = 2
 
@@ -195,7 +190,7 @@ batch_size=128
 test_loader=DataLoader(test_set,batch_size=batch_size,shuffle=True,drop_last=False)
 
 
-#实例化总的模型：
+
 model=Model_LSTM(vocab_size,embedding_size,hidden_size,num_classes,num_layers)
 model.to(device)
 
@@ -256,7 +251,7 @@ with torch.no_grad():
         TN += ((y_true_label == 0) & (y_test_label == 0)).sum().item()
         FN += ((y_true_label == 0) & (y_test_label == 1)).sum().item()
 
-        # 计算损失值：
+
         loss = F.cross_entropy(y_test_pred, y_data)
 
         #calculate acc
@@ -265,7 +260,7 @@ with torch.no_grad():
         auc = metrics.roc_auc_score(y_data[:].detach().cpu().numpy(), y_test_pred[:, 1].detach().cpu().numpy())
 
 
-        # 计算得分
+        #calculate score
         y_test_true.append(y_data[:].detach().cpu().numpy())
         y_test_score.append(y_test_pred[:, 1].detach().cpu().numpy())
 
@@ -276,11 +271,11 @@ with torch.no_grad():
 
     avg_acc, avg_loss, avg_auc = np.mean(test_acc), np.mean(test_loss), np.mean(test_auc)
 
-    # 合并数据：
+    # concate data
     y_test_true = np.concatenate(y_test_true)
     y_test_score = np.concatenate(y_test_score)
 
-    # 保存真实值和预测值的值
+    #save y_socre and y_true
     np.save('../np_weights/BiLSTM(WE)_y_test_true.npy',y_test_true)
     np.save('../np_weights/BiLSTM(WE)_y_test_score.npy',y_test_score)
 
@@ -301,7 +296,7 @@ with torch.no_grad():
 
     # eval_SN_SP_ACC_MCC=[]
 
-    # 计算SN，SP，ACC，MCC
+    # calculate SN，SP，ACC，MCC
     SN = TP / (TP + FN)
     SP = TN / (TN + FP)
     ACC = (TP + TN) / (TP + TN + FP + FN)

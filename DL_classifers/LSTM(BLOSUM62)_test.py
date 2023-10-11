@@ -15,8 +15,6 @@ from torch.utils.data import Dataset,DataLoader,Subset
 train_filepath= '../Datasets/train.csv'
 test_filepath= '../Datasets/ind_test.csv'
 
-
-# 对数据进行二进制编码：
 Amino_acid_sequence = 'ACDEFGHIKLMNPQRSTVWYX'
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -65,7 +63,6 @@ def get_BLOSUM62_encoding(data):
         'X': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # -
     }
 
-    # 对blosum62取均值：
     for key in blosum62:
         for index,value in enumerate(blosum62[key]):
             blosum62[key][index]=round((value + 4) / 15,3)
@@ -99,7 +96,6 @@ data=read_file(test_filepath)
 test_dataset=get_BLOSUM62_encoding(data)
 
 
-# 构建数据集：
 class MyDataset(Dataset):
 
     def __init__(self, datas, labels):
@@ -116,7 +112,6 @@ class MyDataset(Dataset):
         return len(self.datas)
 
 
-# 形成数据集：tuple
 # train_set = MyDataset(train_dataset[0], train_dataset[1])
 test_set = MyDataset(test_dataset[0], test_dataset[1])
 # print(train_set)
@@ -169,14 +164,11 @@ class Model_LSTM(nn.Module):
 
         return (lstm_outputs), outputs
 
-# 模型训练：
+
 warnings.filterwarnings("ignore")
-# 指定学习率
 learning_rate = 0.001
-# 指定embedding的数量为词表长度
 
 input_size=21
-# LSTM网络隐状态向量的维度
 hidden_size = 64
 num_classes = 2
 
@@ -206,8 +198,6 @@ batch_size=128
 
 test_loader=DataLoader(test_set,batch_size=batch_size,shuffle=True,drop_last=False)
 
-
-#实例化总的模型：
 model=Model_LSTM(input_size,hidden_size,num_classes,num_layers)
 model.to(device)
 
@@ -230,7 +220,6 @@ test_fprs = []
 test_base_fpr = np.linspace(0, 1, 101)
 test_base_fpr[-1] = 1.0
 
-# 独立数据集测试：
 model.eval()
 with torch.no_grad():
     test_acc = []
@@ -269,7 +258,6 @@ with torch.no_grad():
         TN += ((y_true_label == 0) & (y_test_label == 0)).sum().item()
         FN += ((y_true_label == 0) & (y_test_label == 1)).sum().item()
 
-        # 计算损失值：
         loss = F.cross_entropy(y_test_pred, y_data)
 
         #calculate acc
@@ -278,7 +266,6 @@ with torch.no_grad():
         auc = metrics.roc_auc_score(y_data[:].detach().cpu().numpy(), y_test_pred[:, 1].detach().cpu().numpy())
 
 
-        # 计算得分
         y_test_true.append(y_data[:].detach().cpu().numpy())
         y_test_score.append(y_test_pred[:, 1].detach().cpu().numpy())
 
@@ -289,11 +276,9 @@ with torch.no_grad():
 
     avg_acc, avg_loss, avg_auc = np.mean(test_acc), np.mean(test_loss), np.mean(test_auc)
 
-    # 合并数据：
     y_test_true = np.concatenate(y_test_true)
     y_test_score = np.concatenate(y_test_score)
 
-    # 保存真实值和预测值的值
     np.save('../np_weights/LSTM(BLOSUM62)_y_test_true.npy',y_test_true)
     np.save('../np_weights/LSTM(BLOSUM62)_y_test_score.npy',y_test_score)
 
@@ -314,7 +299,7 @@ with torch.no_grad():
 
     # eval_SN_SP_ACC_MCC=[]
 
-    # 计算SN，SP，ACC，MCC
+    # SN，SP，ACC，MCC
     SN = TP / (TP + FN)
     SP = TN / (TN + FP)
     ACC = (TP + TN) / (TP + TN + FP + FN)
