@@ -30,8 +30,8 @@ learn_rate = 0.001
 Amino_acid_sequence = 'ACDEFGHIKLMNPQRSTVWYX'
 
 
-# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-device='cpu'
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+# device='cpu'
 
 #binary encoding
 def create_encode_dataset(filepath):
@@ -344,10 +344,9 @@ def independet_test(model,test_loader,device):
     base_fpr[-1] = 1.0
 
 
-
     #load mmodel
     model_path= '../model_weights/PlantNh-Kcr-FinalWeight.pth'
-    model.load_state_dict(torch.load(model_path,map_location=torch.device("cpu")))
+    model.load_state_dict(torch.load(model_path,map_location=torch.device("cuda:0" if torch.cuda.is_available() else "cpu")))
 
 
     test_roc = []

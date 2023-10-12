@@ -14,9 +14,8 @@ from sklearn import metrics
 from sklearn.metrics import roc_auc_score,roc_curve,auc
 
 Amino_acid_sequence = 'ACDEFGHIKLMNPQRSTVWYX'
-# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-device='cpu'
 
 # binary encoding
 def create_encode_dataset(filepath):
@@ -426,7 +425,7 @@ kfold_SN_SP_ACC_MCC.append(mean_MCC)
 
 #the mean results of five-fold cross-validation on Sn, Sp, ACC, MCC
 
-# np.save('../np_weights/PlantNh-Kcr_5kfold_SN_SP_ACC_MCC.npy', kfold_SN_SP_ACC_MCC)
+np.save('../np_weights/PlantNh-Kcr_5kfold_SN_SP_ACC_MCC.npy', kfold_SN_SP_ACC_MCC)
 print("5kfold: SN is: {}, SP is: {}, ACC is: {},MCC is: {}".format(mean_SN,mean_SP,mean_ACC,mean_MCC))
 
 # the visualization result of five-fold cross-validation
@@ -449,7 +448,7 @@ def Kf_show(plt, base_fpr, roc, roc_auc):
     plt.title('ROC curve')
     plt.xlabel('False Positive Rate', fontweight='bold')
     plt.ylabel('True Positive Rate', fontweight='bold')
-    plt.savefig('../figures/PlantNh-Kcr.png')
+    # plt.savefig('../figures/PlantNh-Kcr.png')
     plt.show()
 
 Kf_show(plt, base_fpr, roc, roc_auc)
