@@ -14,7 +14,9 @@ from sklearn import metrics
 from sklearn.metrics import roc_auc_score,roc_curve,auc
 
 Amino_acid_sequence = 'ACDEFGHIKLMNPQRSTVWYX'
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+device='cpu'
 
 # binary encoding
 def create_encode_dataset(filepath):
@@ -324,9 +326,9 @@ def train(model, train_loader, valid_loader,device):
             y_score.append(y_predict[:, 1].detach().cpu().numpy())
 
             TP += ((y_true_label == 1) & (y_predict_label == 1)).sum().item()
-            FP += ((y_true_label == 1) & (y_predict_label == 0)).sum().item()
+            FP += ((y_true_label == 0) & (y_predict_label == 1)).sum().item()
             TN += ((y_true_label == 0) & (y_predict_label == 0)).sum().item()
-            FN += ((y_true_label == 0) & (y_predict_label == 1)).sum().item()
+            FN += ((y_true_label == 1) & (y_predict_label == 0)).sum().item()
 
             if (batch_id % 64 == 0):
                 print("batch_id is {},loss is {},acc is:{}, auc is {}".format(batch_id,loss.detach().cpu().numpy(),acc,auc))
@@ -451,88 +453,3 @@ def Kf_show(plt, base_fpr, roc, roc_auc):
     plt.show()
 
 Kf_show(plt, base_fpr, roc, roc_auc)
-
-####################################
-
-#Use all data sets for training.
-import numpy as np
-import math
-from numpy import interp
-import warnings
-
-warnings.filterwarnings("ignore")
-
-epochs = 50
-batch_size = 128
-learn_rate = 0.001
-
-train_loss = []
-train_acc = []
-train_auc = []
-
-eval_losses = []
-eval_accuracies = []
-eval_auces = []
-
-roc = []
-roc_auc = []
-
-tprs = []
-fprs = []
-
-base_fpr = np.linspace(0, 1, 101)
-base_fpr[-1] = 1.0
-
-
-def total_train(model, train_loader, device):
-    print("train is start!")
-    model.train()
-
-    optimizer = torch.optim.Adam(params=model.parameters(), lr=learn_rate)
-    for epoch in range(epochs):
-
-        epoch_loss = []
-        epoch_acc = []
-        epoch_auc = []
-        for batch_id, data in enumerate(train_loader):
-
-            x_data = data[0].to(device)
-            y_data = data[1].to(device)
-            y_data = torch.tensor(y_data, dtype=torch.long)
-            # print(x_data)
-            _, y_predict = model(x_data)
-
-            loss = F.cross_entropy(y_predict, y_data)
-
-            acc = metrics.accuracy_score(y_data.detach().cpu().numpy(),
-                                         torch.argmax(y_predict, dim=1).detach().cpu().numpy())
-            # print("y_data:",y_data)
-            auc = metrics.roc_auc_score(y_data.detach().cpu().numpy(), y_predict[:, 1].detach().cpu().numpy())
-
-            epoch_loss.append(loss.detach().cpu().numpy())
-            epoch_acc.append(acc)
-            epoch_auc.append(auc)
-            if (batch_id % 64 == 0):
-                print("epoch is :{},batch_id is {},loss is {},acc is:{},auc is:{}".format(epoch, batch_id,
-                                                                                          loss.detach().cpu().numpy(),
-                                                                                          acc, auc))
-            loss.backward()
-            optimizer.step()
-            optimizer.zero_grad()
-
-        avg_loss, avg_acc, avg_auc = np.mean(epoch_loss), np.mean(epoch_acc), np.mean(epoch_auc)
-        print("[train acc is:{}, loss is :{},auc is:{}]".format(avg_acc, avg_loss, avg_auc))
-
-        if (epoch + 1) == epochs:
-            # save model
-            torch.save(model.state_dict(), '../model_weights/PlantNh-Kcr-FinalWeight.pth')
-
-
-train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, drop_last=False)
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-model = KcrNet()
-model.to(device)
-
-#training model
-total_train(model, train_loader, device)
-

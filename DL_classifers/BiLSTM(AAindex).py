@@ -309,9 +309,9 @@ def train(model, train_loader,valid_loader,device):
             valid_auc.append(auc)
 
             TP += ((y_true_label == 1) & (y_predict_label == 1)).sum().item()
-            FP += ((y_true_label == 1) & (y_predict_label == 0)).sum().item()
+            FP += ((y_true_label == 0) & (y_predict_label == 1)).sum().item()
             TN += ((y_true_label == 0) & (y_predict_label == 0)).sum().item()
-            FN += ((y_true_label == 0) & (y_predict_label == 1)).sum().item()
+            FN += ((y_true_label == 1) & (y_predict_label == 0)).sum().item()
             # valid_auc.append(auc)
 
             if batch_id % 64 == 0:

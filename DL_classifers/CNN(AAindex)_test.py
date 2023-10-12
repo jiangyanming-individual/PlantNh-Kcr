@@ -260,9 +260,9 @@ with torch.no_grad():
         y_test_label = torch.argmax(y_test_pred, dim=1)
 
         TP += ((y_true_label == 1) & (y_test_label == 1)).sum().item()
-        FP += ((y_true_label == 1) & (y_test_label == 0)).sum().item()
+        FP += ((y_true_label == 0) & (y_test_label == 1)).sum().item()
         TN += ((y_true_label == 0) & (y_test_label == 0)).sum().item()
-        FN += ((y_true_label == 0) & (y_test_label == 1)).sum().item()
+        FN += ((y_true_label == 1) & (y_test_label == 0)).sum().item()
 
 
         loss = F.cross_entropy(y_test_pred, y_data)

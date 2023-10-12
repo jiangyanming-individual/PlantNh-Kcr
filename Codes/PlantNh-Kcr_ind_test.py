@@ -14,13 +14,24 @@ from matplotlib import pyplot as plt
 import numpy as np
 from sklearn import metrics
 from sklearn.metrics import roc_auc_score, roc_curve, auc
+import numpy as np
+from numpy import interp
+import warnings
+import math
+from sklearn import metrics
+warnings.filterwarnings("ignore")
+
+batch_size = 128
+learn_rate = 0.001
+
+
 
 #amino acid sequence
 Amino_acid_sequence = 'ACDEFGHIKLMNPQRSTVWYX'
 
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
+# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device='cpu'
 
 #binary encoding
 def create_encode_dataset(filepath):
@@ -59,9 +70,12 @@ def create_encode_dataset(filepath):
     return np.array(result_seq_datas), np.array(result_seq_labels, dtype=np.int64)
 
 
+train_filepath='../Datasets/train.csv'
 #test file path
 test_filepath= '../Datasets/ind_test.csv'
 
+
+train_dataset, train_labels = create_encode_dataset(train_filepath)
 test_dataset, test_labels = create_encode_dataset(test_filepath)
 print(test_dataset.shape)
 
@@ -113,8 +127,6 @@ class MyDataset(Dataset):
     def __len__(self):
         return len(self.datas)
 
-# train_set = MyDataset(train_dataset, train_labels)
-test_set = MyDataset(test_dataset, test_labels)
 
 # total model
 class Model_LSTM_MutilHeadSelfAttention(nn.Module):
@@ -250,136 +262,210 @@ model=KcrNet()
 print(model)
 
 
+
 import numpy as np
+import math
 from numpy import interp
 import warnings
+
 warnings.filterwarnings("ignore")
 
+epochs = 50
 batch_size = 128
 learn_rate = 0.001
 
+train_loss = []
+train_acc = []
+train_auc = []
+
+eval_losses = []
+eval_accuracies = []
+eval_auces = []
+
+roc = []
+roc_auc = []
+
+tprs = []
+fprs = []
 
 base_fpr = np.linspace(0, 1, 101)
 base_fpr[-1] = 1.0
 
-test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=True, drop_last=False)
+
+def total_train(model, train_loader, device):
+    print("train is start!")
+    model.train()
+
+    optimizer = torch.optim.Adam(params=model.parameters(), lr=learn_rate)
+    for epoch in range(epochs):
+
+        epoch_loss = []
+        epoch_acc = []
+        epoch_auc = []
+        for batch_id, data in enumerate(train_loader):
+
+            x_data = data[0].to(device)
+            y_data = data[1].to(device)
+            y_data = torch.tensor(y_data, dtype=torch.long)
+            # print(x_data)
+            _, y_predict = model(x_data)
+
+            loss = F.cross_entropy(y_predict, y_data)
+
+            acc = metrics.accuracy_score(y_data.detach().cpu().numpy(),
+                                         torch.argmax(y_predict, dim=1).detach().cpu().numpy())
+            # print("y_data:",y_data)
+            auc = metrics.roc_auc_score(y_data.detach().cpu().numpy(), y_predict[:, 1].detach().cpu().numpy())
+
+            epoch_loss.append(loss.detach().cpu().numpy())
+            epoch_acc.append(acc)
+            epoch_auc.append(auc)
+            if (batch_id % 64 == 0):
+                print("epoch is :{},batch_id is {},loss is {},acc is:{},auc is:{}".format(epoch, batch_id,
+                                                                                          loss.detach().cpu().numpy(),
+                                                                                          acc, auc))
+            loss.backward()
+            optimizer.step()
+            optimizer.zero_grad()
+
+        avg_loss, avg_acc, avg_auc = np.mean(epoch_loss), np.mean(epoch_acc), np.mean(epoch_auc)
+        print("[train acc is:{}, loss is :{},auc is:{}]".format(avg_acc, avg_loss, avg_auc))
+
+        if (epoch + 1) == epochs:
+            # save model
+            torch.save(model.state_dict(), '../model_weights/PlantNh-Kcr-FinalWeight.pth')
 
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-model = KcrNet()
-model.to(device)
+def independet_test(model,test_loader,device):
 
 
-#load mmodel
-model_path= '../model_weights/PlantNh-Kcr-FinalWeight.pth'
-model.load_state_dict(torch.load(model_path,map_location=torch.device("cuda:0" if torch.cuda.is_available() else "cpu")))
 
-import math
-from sklearn import metrics
-
-test_roc = []
-test_roc_auc = []
-
-test_tprs = []
-test_fprs = []
-
-test_base_fpr = np.linspace(0, 1, 101)
-test_base_fpr[-1] = 1.0
+    base_fpr = np.linspace(0, 1, 101)
+    base_fpr[-1] = 1.0
 
 
-eval_SN_SP_ACC_MCC=[]
-# 独立数据集测试：
-model.eval()
-with torch.no_grad():
-    test_acc = []
-    test_loss = []
-    test_auc = []
 
-    y_test_true = []
-    y_test_score = []
-
-    TP, FP, TN, FN = 0, 0, 0, 0
-
-    SN = 0
-    SP = 0
-    ACC = 0
-    MCC = 0
-
-    for batch_id, data in enumerate(test_loader):
-        x_data = data[0].to(device)
-        y_data = data[1].to(device)
-
-        y_data = torch.tensor(y_data, dtype=torch.long)
-
-        y_true_label = y_data
-        # y_data = torch.unsqueeze(y_data, axis=-1)
-
-        _,y_test_pred = model(x_data)
-
-        y_test_label = torch.argmax(y_test_pred, dim=1)
-
-        TP += ((y_true_label == 1) & (y_test_label == 1)).sum().item()
-        FP += ((y_true_label == 1) & (y_test_label == 0)).sum().item()
-        TN += ((y_true_label == 0) & (y_test_label == 0)).sum().item()
-        FN += ((y_true_label == 0) & (y_test_label == 1)).sum().item()
-
-        #calculate loss
-        loss = F.cross_entropy(y_test_pred, y_data)
-
-        #calculate acc
-        acc =metrics.accuracy_score(y_data.detach().cpu().numpy(),torch.argmax(y_test_pred,dim=1).detach().cpu().numpy())
-        #calculate auc
-        auc = metrics.roc_auc_score(y_data[:].detach().cpu().numpy(), y_test_pred[:, 1].detach().cpu().numpy())
+    #load mmodel
+    model_path= '../model_weights/PlantNh-Kcr-FinalWeight.pth'
+    model.load_state_dict(torch.load(model_path,map_location=torch.device("cpu")))
 
 
-        #calculate sscore
-        y_test_true.append(y_data[:].detach().cpu().numpy())
-        y_test_score.append(y_test_pred[:, 1].detach().cpu().numpy())
+    test_roc = []
+    test_roc_auc = []
 
-        test_acc.append(acc)
-        test_loss.append(loss.detach().cpu().numpy())
-        test_auc.append(auc)
+    test_tprs = []
+    test_fprs = []
 
-    avg_acc, avg_loss, avg_auc = np.mean(test_acc), np.mean(test_loss), np.mean(test_auc)
-
-    # concate data
-    y_test_true = np.concatenate(y_test_true)
-    y_test_score = np.concatenate(y_test_score)
-
-    # save the score values and true values
-    # np.save('../np_weights/PlantNh-Kcr_y_test_true.npy', y_test_true)
-    # np.save('../np_weights/PlantNh-Kcr_y_test_score.npy', y_test_score)
-
-    fpr, tpr, _ = metrics.roc_curve(y_test_true, y_test_score)
-
-    auc = metrics.auc(fpr, tpr)
-
-    test_roc.append([fpr, tpr])
-    test_roc_auc.append(auc)
-
-    tpr = interp(test_base_fpr, fpr, tpr)
-    tpr[0] = 0.0
-    test_tprs.append(tpr)
-    test_fprs.append(fpr)
-
-    print("[ind_test:avg_acc is:{},avg_loss is :{},auc is:{}]".format(avg_acc, avg_loss, auc))
-
-    # eval_SN_SP_ACC_MCC=[]
-
-    # calculate SN，SP，ACC，MCC
-    SN = TP / (TP + FN)
-    SP = TN / (TN + FP)
-    ACC = (TP + TN) / (TP + TN + FP + FN)
-    MCC = ((TP * TN) - (FP * FN)) / math.sqrt((TP + FP) * (TP + FN) * (TN + FP) * (TN + FN))
-
-    eval_SN_SP_ACC_MCC.append(SN)
-    eval_SN_SP_ACC_MCC.append(SP)
-    eval_SN_SP_ACC_MCC.append(ACC)
-    eval_SN_SP_ACC_MCC.append(MCC)
-
-    # np.save('../np_weights/PlantNh-Kcr_eval.npy', eval_SN_SP_ACC_MCC)
-    print("ind_test TP is {},FP is {},TN is {},FN is {}".format(TP, FP, TN, FN))
-    print("ind_test : SN is {},SP is {},ACC is {},MCC is {}".format(SN, SP, ACC, MCC))
+    test_base_fpr = np.linspace(0, 1, 101)
+    test_base_fpr[-1] = 1.0
 
 
+    eval_SN_SP_ACC_MCC=[]
+    # 独立数据集测试：
+    model.eval()
+    with torch.no_grad():
+        test_acc = []
+        test_loss = []
+        test_auc = []
+
+        y_test_true = []
+        y_test_score = []
+
+        TP, FP, TN, FN = 0, 0, 0, 0
+
+        for batch_id, data in enumerate(test_loader):
+            x_data = data[0].to(device)
+            y_data = data[1].to(device)
+
+            y_data = torch.tensor(y_data, dtype=torch.long)
+
+            y_true_label = y_data
+            # y_data = torch.unsqueeze(y_data, axis=-1)
+
+            _,y_test_pred = model(x_data)
+
+            y_test_label = torch.argmax(y_test_pred, dim=1)
+
+            TP += ((y_true_label == 1) & (y_test_label == 1)).sum().item()
+            FP += ((y_true_label == 0) & (y_test_label == 1)).sum().item()
+            TN += ((y_true_label == 0) & (y_test_label == 0)).sum().item()
+            FN += ((y_true_label == 1) & (y_test_label == 0)).sum().item()
+
+            #calculate loss
+            loss = F.cross_entropy(y_test_pred, y_data)
+
+            #calculate acc
+            acc =metrics.accuracy_score(y_data.detach().cpu().numpy(),torch.argmax(y_test_pred,dim=1).detach().cpu().numpy())
+            #calculate auc
+            auc = metrics.roc_auc_score(y_data[:].detach().cpu().numpy(), y_test_pred[:, 1].detach().cpu().numpy())
+
+
+            #calculate sscore
+            y_test_true.append(y_data[:].detach().cpu().numpy())
+            y_test_score.append(y_test_pred[:, 1].detach().cpu().numpy())
+
+            test_acc.append(acc)
+            test_loss.append(loss.detach().cpu().numpy())
+            test_auc.append(auc)
+
+        avg_acc, avg_loss, avg_auc = np.mean(test_acc), np.mean(test_loss), np.mean(test_auc)
+
+        # concate data
+        y_test_true = np.concatenate(y_test_true)
+        y_test_score = np.concatenate(y_test_score)
+
+        # save the score values and true values
+        np.save('../np_weights/PlantNh-Kcr_y_test_true.npy', y_test_true)
+        np.save('../np_weights/PlantNh-Kcr_y_test_score.npy', y_test_score)
+
+        fpr, tpr, _ = metrics.roc_curve(y_test_true, y_test_score)
+
+        auc = metrics.auc(fpr, tpr)
+
+        test_roc.append([fpr, tpr])
+        test_roc_auc.append(auc)
+
+        tpr = interp(test_base_fpr, fpr, tpr)
+        tpr[0] = 0.0
+        test_tprs.append(tpr)
+        test_fprs.append(fpr)
+
+        print("[ind_test:avg_acc is:{},avg_loss is :{},auc is:{}]".format(avg_acc, avg_loss, auc))
+
+        # eval_SN_SP_ACC_MCC=[]
+
+        # calculate SN，SP，ACC，MCC
+        SN = TP / (TP + FN)
+        SP = TN / (TN + FP)
+        ACC = (TP + TN) / (TP + TN + FP + FN)
+        MCC = ((TP * TN) - (FP * FN)) / math.sqrt((TP + FP) * (TP + FN) * (TN + FP) * (TN + FN))
+
+        eval_SN_SP_ACC_MCC.append(SN)
+        eval_SN_SP_ACC_MCC.append(SP)
+        eval_SN_SP_ACC_MCC.append(ACC)
+        eval_SN_SP_ACC_MCC.append(MCC)
+
+        np.save('../np_weights/PlantNh-Kcr_eval.npy', eval_SN_SP_ACC_MCC)
+        print("ind_test TP is {},FP is {},TN is {},FN is {}".format(TP, FP, TN, FN))
+        print("ind_test : SN is {},SP is {},ACC is {},MCC is {}".format(SN, SP, ACC, MCC))
+
+
+
+if __name__ == '__main__':
+
+
+    train_set = MyDataset(train_dataset, train_labels)
+    test_set = MyDataset(test_dataset, test_labels)
+
+    train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, drop_last=False)
+    # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=True, drop_last=False)
+    model = KcrNet()
+    model.to(device)
+
+
+    # training model
+    total_train(model, train_loader, device)
+    # to test model
+    independet_test(model,test_loader,device)
 

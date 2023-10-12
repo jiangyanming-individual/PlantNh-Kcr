@@ -304,9 +304,9 @@ def train(model, train_loader, valid_loader,device):
             y_score.append(y_predict[:, 1].detach().cpu().numpy())
 
             TP += ((y_true_label == 1) & (y_predict_label == 1)).sum().item()
-            FP += ((y_true_label == 1) & (y_predict_label == 0)).sum().item()
+            FP += ((y_true_label == 0) & (y_predict_label == 1)).sum().item()
             TN += ((y_true_label == 0) & (y_predict_label == 0)).sum().item()
-            FN += ((y_true_label == 0) & (y_predict_label == 1)).sum().item()
+            FN += ((y_true_label == 1) & (y_predict_label == 0)).sum().item()
 
             if (batch_id % 64 == 0):
                 print("batch_id is {},loss is {},acc is:{}, auc is {}".format(batch_id,loss.detach().cpu().numpy(),acc,auc))

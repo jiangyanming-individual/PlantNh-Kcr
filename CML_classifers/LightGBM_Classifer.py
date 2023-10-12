@@ -379,9 +379,9 @@ def LightGBM_Classifer(train_data,ind_test_data):
         print("confusion matrix values :",res)
 
         TP += ((y_valid_true_label == 1) & (y_valid_pred_label == 1)).sum().item()
-        FP += ((y_valid_true_label == 1) & (y_valid_pred_label == 0)).sum().item()
+        FP += ((y_valid_true_label == 0) & (y_valid_pred_label == 1)).sum().item()
         TN += ((y_valid_true_label == 0) & (y_valid_pred_label == 0)).sum().item()
-        FN += ((y_valid_true_label == 0) & (y_valid_pred_label == 1)).sum().item()
+        FN += ((y_valid_true_label == 1) & (y_valid_pred_label == 0)).sum().item()
 
         SN = TP / (TP + FN)
         SP = TN / (TN + FP)
