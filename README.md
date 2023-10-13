@@ -1,22 +1,17 @@
 # PlantNh-Kcr
-This code is for the article 'PlantNh-Kcr: A deep learning model for predicting non-histone crotonylation sites in plants'.
+This reposiory is for the article 'PlantNh-Kcr: A deep learning model for predicting non-histone crotonylation sites in plants'. 
+The code was implemented in python 3.9 and pytorch 1.13.1. Note that  if the program has a memory overflow problem occurs, please try setting **device='cpu'**.
 Please feel free to contact me if you need any further information and help, email : jym19943856480@163.com.
 
-### Note that  if the program has a memory overflow problem occurs, please try setting **device='cpu'**
 
-### The introduction of each folder
-1. We used python version 3.9 and pytorch version 1.13.1.
+### The introduction of each folder is as below
 
-2. **The CML_classifer folder** and **CML_weights folder** contain conventional machine learning classifiers(for example, RF, AdaBoost, and LightGBM) and the model weight information saved during model training and independent testing, respectively.
+1. **The CML_classifer folder** and **CML_weights folder** contain conventional machine learning classifiers(for example, RF, AdaBoost, and LightGBM) and the model weight information saved during model training and independent testing.
 
-3. The code for the five-fold cross-validation, independent test, and image visualization are located in **the Codes folder**. the five-fold cross-validation model weight and independent test model weight are located in **the model_weights folder**, which also contains the model weight for each plant.
+2. The code for the five-fold cross-validation, independent test, and image visualization are located in **the Codes folder**. The weights of models on five-fold cross-validation model weight and independent test, and the weights of models for each plant are located in **the model_weights folder**.
 
-4. **The Csv folder** contains the csv files of training and test sets for each plant divided at a 7:3 ratio.
+3. **The Csv folder** contains the csv files of training and test sets for each plant. 
 
-5. There are the files of total training sets and independent test sets in **the Datasets folder**, which also includes the datasets after Cd-hit with 40% sequence identity.
+4. There are the files of total training set and independent tes set in **the Datasets folder**.
 
-6. **The DL_classifer folder** and **DL_weights folder** contains deep learning classifiers(for example, CNN, LSTM, and BiLSTM) and the model weight information saved during model training and independent testing, respectively.
-
-7. **The figures folder** includes the results of images for this paper.
-
-8. The information on model evaluation metrics (such as Sn, Sp, ACC, MCC, and AUC) are located in **the np_weights folder**.
+5. **The DL_classifer folder** and **DL_weights folder** contains deep learning classifiers(for example, CNN, LSTM, and BiLSTM) and the model weight information saved during model training and independent testing.
