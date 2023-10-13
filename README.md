@@ -19,4 +19,4 @@ Please feel free to contact me if you need any further information and help, ema
 
 7. **The figures folder** includes the results of images for this paper.
 
-8. The information on metric values(such as Sn, Sp, ACC, MCC, and AUC) are located in **the np_weights folder**.
+8. The information on model evaluation metrics (such as Sn, Sp, ACC, MCC, and AUC) are located in **the np_weights folder**.
