@@ -82,11 +82,11 @@ print(test_dataset.shape)
 
 
 #different plants
-wheat_filepath= "../Csv/speices_train_test_datasets/wheat_test.csv"
-papaya_filepath= "../Csv/speices_train_test_datasets/papaya_test.csv"
-peanut_filepath= "../Csv/speices_train_test_datasets/peanut_test.csv"
-rice_filepath= '../Csv/speices_train_test_datasets/rice_test.csv'
-tabacum_filepath= "../Csv/speices_train_test_datasets/tabacum_test.csv"
+wheat_filepath= "../Csv/speices_train_test_datasets/test/wheat_test.csv"
+papaya_filepath= "../Csv/speices_train_test_datasets/test/papaya_test.csv"
+peanut_filepath= "../Csv/speices_train_test_datasets/test/peanut_test.csv"
+rice_filepath= '../Csv/speices_train_test_datasets/test/rice_test.csv'
+tabacum_filepath= "../Csv/speices_train_test_datasets/test/tabacum_test.csv"
 
 
 #wheat:
