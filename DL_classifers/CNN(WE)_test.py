@@ -22,6 +22,7 @@ for i in range(len(AA_aaindex)):
     word2id_dict[AA_aaindex[i]]=i+1
 
 
+device='cpu'
 
 train_filepath= '../Datasets/train.csv'
 test_filepath= '../Datasets/ind_test.csv'
@@ -181,8 +182,6 @@ total_ACC = []
 total_MCC = []
 test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=True, drop_last=False)
 
-
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 model = KcrNet(vocab_size=vocab_size,embedding_size=embedding_size,input_classes=29,nums_classes=2)
 model.to(device)
 

@@ -30,8 +30,8 @@ learn_rate = 0.001
 Amino_acid_sequence = 'ACDEFGHIKLMNPQRSTVWYX'
 
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-# device='cpu'
+# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device='cpu'
 
 #binary encoding
 def create_encode_dataset(filepath):
@@ -154,6 +154,8 @@ class Model_LSTM_MutilHeadSelfAttention(nn.Module):
         )
         # attention layer：
         self.attention = nn.MultiheadAttention(embed_dim=hidden_size * 2,num_heads=8,batch_first=True,dropout=0.5)
+        # classfier layer：
+        self.cls_layer = nn.Linear(self.hidden_size * 2, self.num_classes)
         self.dropout1 = nn.Dropout(0.9)
 
     def forward(self, inputs):
@@ -464,7 +466,7 @@ if __name__ == '__main__':
 
 
     # training model
-    total_train(model, train_loader, device)
+    # total_train(model, train_loader, device)
     # to test model
     independet_test(model,test_loader,device)
 

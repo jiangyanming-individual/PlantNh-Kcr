@@ -16,7 +16,9 @@ from sklearn.metrics import roc_auc_score, roc_curve, auc
 Amino_acid_sequence = 'ACDEFGHIKLMNPQRSTVWYX'
 
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device='cpu'
+
 
 def create_encode_dataset(filepath):
     data_list = []
@@ -155,8 +157,6 @@ base_fpr[-1] = 1.0
 
 test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=True, drop_last=False)
 
-
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 model = KcrNet()
 model.to(device)
 

@@ -12,6 +12,7 @@ from torch.utils.data import Dataset,DataLoader,Subset
 
 
 AA_aaindex = 'ACDEFGHIKLMNPQRSTVWY'
+device='cpu'
 
 word2id_dict={'X':0}
 for i in range(len(AA_aaindex)):

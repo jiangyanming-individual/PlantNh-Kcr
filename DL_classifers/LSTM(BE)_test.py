@@ -17,7 +17,9 @@ test_filepath= '../Datasets/ind_test.csv'
 
 
 Amino_acid_sequence = 'ACDEFGHIKLMNPQRSTVWYX'
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device='cpu'
+
 
 def create_encode_dataset(filepath):
     data_list = []

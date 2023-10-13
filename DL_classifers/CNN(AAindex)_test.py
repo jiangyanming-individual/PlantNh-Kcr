@@ -15,8 +15,8 @@ from sklearn.metrics import roc_auc_score,roc_curve,auc
 
 
 Amino_acid_sequence = 'ACDEFGHIKLMNPQRSTVWYX'
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
+# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device='cpu'
 
 train_filepath= '../Datasets/train.csv'
 test_filepath= '../Datasets/ind_test.csv'
@@ -206,7 +206,7 @@ test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=True, drop_las
 
 
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
 model = KcrNet(input_classes=29,nums_classes=2)
 model.to(device)
 

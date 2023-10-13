@@ -3,10 +3,6 @@
 # software: PyCharm
 # project:PlantNh-Kcr
 
-"""
-
-RF Classifer
-"""
 
 from sklearn.ensemble import RandomForestClassifier,AdaBoostClassifier
 from sklearn.model_selection import GridSearchCV
@@ -31,8 +27,8 @@ Binary encode
 
 AA_Seq='ACDEFGHIKLMNPQRSTVWYX'
 
-train_path= "../Datasets/train.csv"
-ind_test_path= "../Datasets/ind_test.csv"
+train_path="../datasets/train.csv"
+ind_test_path="../datasets/ind_test.csv"
 
 def read_file(filepath):
 
@@ -54,6 +50,9 @@ def get_Binary_encoding(data):
     y=[]
 
     for seq,label in data:
+
+        # print(seq)
+        # print(label)
         one_code=[]
         for i in seq:
             vector=[0]*21
@@ -86,10 +85,13 @@ def get_AAC_encoding(data):
 
     for seq,label in data:
 
+        # print(seq)
+        # print(label)
         one_code=[]
         counter=Counter(seq)
         # print(counter)
         for key in counter:
+            # 计算概率
             counter[key] = round(counter[key] / len(seq), 3)
 
         for item in AA_Seq:
@@ -102,6 +104,8 @@ def get_AAC_encoding(data):
     X=np.array(X)
     # print(X.shape)
     n,dim=X.shape
+    #
+    # # reshape
     print("new X shape :",X.shape)
     #
     y=np.array(y)
@@ -114,7 +118,7 @@ def get_EGAAC_encoding(data):
 
     X=[]
     y=[]
-    """split to five group"""
+    """分为5组"""
     group = {
         'Aliphatic group': 'GAVLMI',
         'Aromatic groups': 'FYW',
@@ -127,15 +131,19 @@ def get_EGAAC_encoding(data):
 
     for seq,label in data:
 
+        # print(seq)
+        # print(label)
         one_code=[]
         groupCount_dict = {}
         counter=Counter(seq)
         # print(counter)
 
         for key in groupKeys:
+            #遍历每一组:统计每组的个数
             for aa in group[key]:
                 groupCount_dict[key]=groupCount_dict.get(key,0)+counter[aa]
 
+        #计算每组的概率：
         for key in groupKeys:
             one_code.append(round(groupCount_dict[key] / len(seq), 3))
 
@@ -146,6 +154,8 @@ def get_EGAAC_encoding(data):
     X=np.array(X)
     # print(X.shape)
     n,dim=X.shape #(n,5)
+    #
+    # # reshape
     print("new X shape :",X.shape)
     #
     y=np.array(y)
@@ -169,7 +179,7 @@ def get_AAindex_encode(data):
     AAindex = []
 
     for i in records:
-        # print(i.rstrip().split()[0])  #get AAindex name
+        # print(i.rstrip().split()[0])  #得到AAindex的names
         AAindex_names.append(i.rstrip().split()[0] if i.rstrip() != '' else None)
         AAindex.append(i.rstrip().split()[1:] if i.rstrip() != '' else None)
 
@@ -180,11 +190,12 @@ def get_AAindex_encode(data):
         tempAAindex = []
 
         for p in props:
-
+            # 如果29种的一种存在
             if AAindex_names.index(p) != -1:
                 tempAAindex_names.append(p)
                 tempAAindex.append(AAindex[AAindex_names.index(p)])
 
+        # 如果找到了，就将前29种的性质直接替代AAindx；
         if len(tempAAindex_names) != 0:
             AAindex_names = tempAAindex_names
             AAindex = tempAAindex
@@ -199,12 +210,12 @@ def get_AAindex_encode(data):
         one_code=[]
         for aa in seq:
             if aa == 'X':
-                for aaindex in AAindex:
+                for aaindex in AAindex:  # 为X 全部赋值为0
                     one_code.append(0)
                 continue
             for aaindex in AAindex:
                 # print(type(aaindex[seq_index.get(aa)]))
-                one_code.append(aaindex[seq_index.get(aa)])
+                one_code.append(aaindex[seq_index.get(aa)])  # 添加存在的aaindex;
         X.append(one_code) #(29,29)
         # print(one_code)
         y.append(int(label))
@@ -249,7 +260,7 @@ def get_BLOSUM62_encoding(data):
         'X': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # -
     }
 
-    # mean value
+    # 对blosum62取均值：
     for key in blosum62:
         for index,value in enumerate(blosum62[key]):
             blosum62[key][index]=round((value + 4) / 15,3)
@@ -263,6 +274,7 @@ def get_BLOSUM62_encoding(data):
             one_code.extend(blosum62.get(aa)) #(29,21)
 
         # print("one_code:",one_code)
+
         X.append(one_code)
         y.append(int(label))
 
@@ -333,6 +345,7 @@ def RF_Classifer(train_data,ind_test_data):
                                 warm_start=False, class_weight='balanced')
 
     #class_weight='balanced' 均衡样本
+
     X_train,y_train=train_data
 
     kf=KFold(n_splits=5,shuffle=True)
@@ -354,6 +367,7 @@ def RF_Classifer(train_data,ind_test_data):
 
         # print(this_train_x)
         # print(this_train_y)
+        #
         this_valid_x,this_valid_y=X_train[valid_index],y_train[valid_index]
 
         rf_clf.fit(this_train_x,this_train_y)
@@ -368,8 +382,8 @@ def RF_Classifer(train_data,ind_test_data):
         train_acc = accuracy_score(this_train_y, y_train_pred)
         valid_acc = accuracy_score(this_valid_y, y_valid_pred)
 
-        print("the training ACC: {:.2f}%".format(train_acc * 100))
-        print("the valid ACC: {:.2f}%".format(valid_acc * 100))
+        print("训练集准确率: {:.2f}%".format(train_acc * 100))
+        print("验证集准确率: {:.2f}%".format(valid_acc * 100))
 
         #acu:
         y_true.append(this_valid_y)
@@ -384,7 +398,7 @@ def RF_Classifer(train_data,ind_test_data):
 
         #混淆矩阵：
         res=confusion_matrix(y_valid_true_label,y_valid_pred_label)
-        print("confusion matrix values :",res)
+        print("混淆矩阵:",res)
 
         TP += ((y_valid_true_label == 1) & (y_valid_pred_label == 1)).sum().item()
         FP += ((y_valid_true_label == 1) & (y_valid_pred_label == 0)).sum().item()
@@ -401,8 +415,8 @@ def RF_Classifer(train_data,ind_test_data):
         train_ACC.append(ACC)
         train_MCC.append(MCC)
 
-        print("Training TP is {},FP is {},TN is {},FN is {}".format(TP, FP, TN, FN))
-        print("Training SN is {},SP is {},ACC is {},MCC is {}".format(SN, SP, ACC, MCC))
+        print("Train TP is {},FP is {},TN is {},FN is {}".format(TP, FP, TN, FN))
+        print("Train SN is {},SP is {},ACC is {},MCC is {}".format(SN, SP, ACC, MCC))
 
         fold+=1
 
@@ -411,7 +425,7 @@ def RF_Classifer(train_data,ind_test_data):
     train_params.append(np.mean(train_ACC))
     train_params.append(np.mean(train_MCC))
 
-    np.save("../CML_weights/RF_5kfold_BLOSUM62_params.npy", train_params)
+    np.save("../ML_weights/RF_5kfold_BLOSUM62_params.npy",train_params)
     print("Train Mean : SN is {},SP is {},ACC is {},MCC is {}".format(np.mean(train_SN), np.mean(train_SP), np.mean(train_ACC),np.mean(train_MCC)))
     print("ind_test start ...")
 
@@ -428,14 +442,14 @@ def RF_Classifer(train_data,ind_test_data):
     y_test_pred=rf_clf.predict(X_test)
     test_acc=accuracy_score(y_test,y_test_pred)
 
-    print("the testing ACC {:.2f}:".format(test_acc * 100))
+    print("测试集准确率 {:.2f}:".format(test_acc * 100))
     # ind test auc:
     test_auc=roc_auc_score(y_test,rf_clf.predict_proba(X_test)[:,1])
 
-    np.save('../CML_weights/RF_BLOSUM62_y_test_true.npy', y_test)
-    np.save('../CML_weights/RF_BLOSUM62_y_test_score.npy', rf_clf.predict_proba(X_test)[:, 1])
+    np.save('../ML_weights/RF_BLOSUM62_y_test_true.npy', y_test)
+    np.save('../ML_weights/RF_BLOSUM62_y_test_score.npy', rf_clf.predict_proba(X_test)[:,1])
 
-    print("test AUC :",test_auc)
+    print("test auc :",test_auc)
 
     #calculate SN、SP、ACC、MCC
 
@@ -444,9 +458,9 @@ def RF_Classifer(train_data,ind_test_data):
 
 
     TP += ((y_test_true_label == 1) & (y_test_pred_label == 1)).sum().item()
-    FP += ((y_test_true_label == 0) & (y_test_pred_label == 1)).sum().item()
+    FP += ((y_test_true_label == 1) & (y_test_pred_label == 0)).sum().item()
     TN += ((y_test_true_label == 0) & (y_test_pred_label == 0)).sum().item()
-    FN += ((y_test_true_label == 1) & (y_test_pred_label == 0)).sum().item()
+    FN += ((y_test_true_label == 0) & (y_test_pred_label == 1)).sum().item()
 
     SN = TP / (TP + FN)
     SP = TN / (TN + FP)
@@ -462,7 +476,7 @@ def RF_Classifer(train_data,ind_test_data):
     test_params.append(MCC)
 
     #save test SN、SP、ACC、MCC
-    np.save("../CML_weights/RF_test_BLOSUM62_params.npy", test_params)
+    np.save("../ML_weights/RF_test_BLOSUM62_params.npy", test_params)
 
     print("ind test: TP is {},FP is {},TN is {},FN is {}".format(TP, FP, TN, FN))
     print("ind test: SN is {},SP is {},ACC is {},MCC is {}".format(SN, SP, ACC, MCC))

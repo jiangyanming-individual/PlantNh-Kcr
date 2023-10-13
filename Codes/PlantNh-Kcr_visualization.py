@@ -102,7 +102,8 @@ class Model_LSTM_MutilHeadSelfAttention(nn.Module):
         )
         # attention layer：
         self.attention = nn.MultiheadAttention(embed_dim=hidden_size * 2,num_heads=8,batch_first=True,dropout=0.5)
-
+        # classfier layer：
+        self.cls_layer = nn.Linear(self.hidden_size * 2, self.num_classes)
         self.dropout1 = nn.Dropout(0.9)
 
     def forward(self, inputs):

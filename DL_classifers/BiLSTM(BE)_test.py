@@ -14,7 +14,9 @@ from torch.utils.data import Dataset,DataLoader,Subset
 train_filepath= '../Datasets/train.csv'
 test_filepath= '../Datasets/ind_test.csv'
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device='cpu'
+
 
 def load_data(file_path):
     data = []

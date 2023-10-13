@@ -18,8 +18,8 @@ test_filepath= '../Datasets/ind_test.csv'
 
 # 对数据进行二进制编码：
 Amino_acid_sequence = 'ACDEFGHIKLMNPQRSTVWYX'
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
+# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device='cpu'
 
 def read_file(filepath):
 

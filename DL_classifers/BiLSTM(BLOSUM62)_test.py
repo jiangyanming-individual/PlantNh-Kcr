@@ -16,8 +16,8 @@ test_filepath= '../Datasets/ind_test.csv'
 
 
 Amino_acid_sequence = 'ACDEFGHIKLMNPQRSTVWYX'
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
+# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device='cpu'
 
 def read_file(filepath):
 
@@ -213,7 +213,7 @@ model.to(device)
 
 
 #load mmodel
-model_path="../DL_weights/model_weights/BiLSTM(BLOSUM62)-FinalWeight.pth"
+model_path="../DL_weights/BiLSTM(BLOSUM62)-FinalWeight.pth"
 model.load_state_dict(torch.load(model_path,map_location=torch.device("cuda:0" if torch.cuda.is_available() else "cpu")))
 
 
