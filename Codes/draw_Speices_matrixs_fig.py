@@ -31,7 +31,7 @@ values = [
 
 x_ticks= np.arange(len(x_labels))
 x_tick_labels=x_labels
-# 绘制柱状图
+
 plt.figure(figsize=(10, 6))
 for i in range(len(categories)):
     plt.bar(np.arange(len(x_labels)) + i*0.15, values[i], width=0.15,label=categories[i],color=colors[i])
