@@ -14,8 +14,8 @@ from sklearn import metrics
 from sklearn.metrics import roc_auc_score,roc_curve,auc
 
 Amino_acid_sequence = 'ACDEFGHIKLMNPQRSTVWYX'
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
+# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device='cpu'
 
 # binary encoding
 def create_encode_dataset(filepath):

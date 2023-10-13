@@ -416,8 +416,8 @@ def independet_test(model,test_loader,device):
         y_test_score = np.concatenate(y_test_score)
 
         # save the score values and true values
-        np.save('../np_weights/PlantNh-Kcr_y_test_true.npy', y_test_true)
-        np.save('../np_weights/PlantNh-Kcr_y_test_score.npy', y_test_score)
+        # np.save('../np_weights/PlantNh-Kcr_y_test_true.npy', y_test_true)
+        # np.save('../np_weights/PlantNh-Kcr_y_test_score.npy', y_test_score)
 
         fpr, tpr, _ = metrics.roc_curve(y_test_true, y_test_score)
 
