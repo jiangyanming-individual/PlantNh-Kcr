@@ -1,7 +1,7 @@
 # PlantNh-Kcr
 This reposiory is for the article 'PlantNh-Kcr: A deep learning model for predicting non-histone crotonylation sites in plants'. 
 The code was implemented in python 3.9 and pytorch 1.13.1. Note that  if the program has a memory overflow problem occurs, please try setting **device='cpu'**.
-Please feel free to contact me if you need any further information and help, email : jym19943856480@163.com.
+Please feel free to contact me if you need any further information and help, by email jym19943856480@163.com.
 
 
 ### The introduction of each folder is as below
