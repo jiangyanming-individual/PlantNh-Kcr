@@ -10,28 +10,19 @@ import torch
 from torch import nn
 from torch.utils.data import Dataset, DataLoader
 import torch.nn.functional as F
-from matplotlib import pyplot as plt
-import numpy as np
-from sklearn import metrics
-from sklearn.metrics import roc_auc_score, roc_curve, auc
-import numpy as np
-from numpy import interp
 import warnings
-import math
-from sklearn import metrics
 warnings.filterwarnings("ignore")
+from sklearn import metrics
+import numpy as np
+import math
+from numpy import interp
 
-batch_size = 128
-learn_rate = 0.001
 
 
 
 #amino acid sequence
 Amino_acid_sequence = 'ACDEFGHIKLMNPQRSTVWYX'
 
-
-# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-device='cpu'
 
 #binary encoding
 def create_encode_dataset(filepath):
@@ -264,36 +255,6 @@ model=KcrNet()
 print(model)
 
 
-
-import numpy as np
-import math
-from numpy import interp
-import warnings
-
-warnings.filterwarnings("ignore")
-
-epochs = 50
-batch_size = 128
-learn_rate = 0.001
-
-train_loss = []
-train_acc = []
-train_auc = []
-
-eval_losses = []
-eval_accuracies = []
-eval_auces = []
-
-roc = []
-roc_auc = []
-
-tprs = []
-fprs = []
-
-base_fpr = np.linspace(0, 1, 101)
-base_fpr[-1] = 1.0
-
-
 def total_train(model, train_loader, device):
     print("train is start!")
     model.train()
@@ -340,17 +301,6 @@ def total_train(model, train_loader, device):
 
 def independet_test(model,test_loader,device):
 
-
-
-    base_fpr = np.linspace(0, 1, 101)
-    base_fpr[-1] = 1.0
-
-
-    #load mmodel
-    model_path= '../model_weights/PlantNh-Kcr-FinalWeight.pth'
-    model.load_state_dict(torch.load(model_path,map_location=torch.device("cuda:0" if torch.cuda.is_available() else "cpu")))
-
-
     test_roc = []
     test_roc_auc = []
 
@@ -362,7 +312,7 @@ def independet_test(model,test_loader,device):
 
 
     eval_SN_SP_ACC_MCC=[]
-    # 独立数据集测试：
+
     model.eval()
     with torch.no_grad():
         test_acc = []
@@ -428,12 +378,11 @@ def independet_test(model,test_loader,device):
 
         tpr = interp(test_base_fpr, fpr, tpr)
         tpr[0] = 0.0
+
         test_tprs.append(tpr)
         test_fprs.append(fpr)
 
         print("[ind_test:avg_acc is:{},avg_loss is :{},auc is:{}]".format(avg_acc, avg_loss, auc))
-
-        # eval_SN_SP_ACC_MCC=[]
 
         # calculate SN，SP，ACC，MCC
         SN = TP / (TP + FN)
@@ -454,19 +403,31 @@ def independet_test(model,test_loader,device):
 
 if __name__ == '__main__':
 
+    batch_size = 128
+    learn_rate = 0.001
+    epochs = 50
+
+    # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = 'cpu'
 
     train_set = MyDataset(train_dataset, train_labels)
     test_set = MyDataset(test_dataset, test_labels)
 
     train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, drop_last=False)
-    # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
     test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=True, drop_last=False)
     model = KcrNet()
     model.to(device)
 
 
     # training model
-    # total_train(model, train_loader, device)
+    total_train(model, train_loader, device)
+
+
     # to test model
+    #load model
+    model_path= '../model_weights/PlantNh-Kcr-FinalWeight.pth'
+    model.load_state_dict(torch.load(model_path,map_location=torch.device("cuda:0" if torch.cuda.is_available() else "cpu")))
+
     independet_test(model,test_loader,device)
 

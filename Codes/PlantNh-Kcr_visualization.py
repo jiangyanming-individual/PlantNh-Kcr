@@ -8,6 +8,10 @@ from matplotlib import pyplot as plt
 import numpy as np
 from sklearn import metrics
 from sklearn.metrics import roc_auc_score, roc_curve, auc
+import warnings
+warnings.filterwarnings("ignore")
+
+
 
 Amino_acid_sequence = 'ACDEFGHIKLMNPQRSTVWYX'
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -118,8 +122,6 @@ class Model_LSTM_MutilHeadSelfAttention(nn.Module):
         MutilHead_output = context
         return (Bilstm_outputs, MutilHead_output), context
 
-import warnings
-warnings.filterwarnings("ignore")
 
 input_size=len(Amino_acid_sequence)
 hidden_size = 64
@@ -178,7 +180,6 @@ class KcrNet(nn.Module):
 
         visual_outputs,BiLSTM_outputs=self.BiLSTM_ATT(inputs)
 
-
         total_outputs=torch.cat([x,BiLSTM_outputs],dim=-1)
         # print("total_outputs shape:",total_outputs.shape)
 
@@ -186,6 +187,7 @@ class KcrNet(nn.Module):
 
         x = self.linear1(x)
         x = F.relu(x) # activate function
+
         Linear_output=x
 
         x = self.linear2(x)

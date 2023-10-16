@@ -403,7 +403,7 @@ def LightGBM_Classifer(train_data,ind_test_data):
     train_params.append(np.mean(train_ACC))
     train_params.append(np.mean(train_MCC))
 
-    np.save("../CML_weights/LGB_5kfold_BLOSUM62_params.npy", train_params)
+    np.save("../CML_weights/LGB_5kfold_AAindex_params.npy", train_params)
     print("Train ing Mean : SN is {},SP is {},ACC is {},MCC is {}".format(np.mean(train_SN), np.mean(train_SP), np.mean(train_ACC),np.mean(train_MCC)))
     print("ind_test start ...")
 
@@ -425,8 +425,8 @@ def LightGBM_Classifer(train_data,ind_test_data):
     # ind test auc:
     test_auc=roc_auc_score(y_test,lgb_clf.predict_proba(X_test)[:,1])
 
-    np.save('../CML_weights/LGB_BLOSUM62_y_test_true.npy', y_test)
-    np.save('../CML_weights/LGB_BLOSUM62_y_test_score.npy', lgb_clf.predict_proba(X_test)[:, 1])
+    np.save('../CML_weights/LGB_AAindex_y_test_true.npy', y_test)
+    np.save('../CML_weights/LGB_AAindex_y_test_score.npy', lgb_clf.predict_proba(X_test)[:, 1])
 
     print("test AUC :",test_auc)
 
@@ -437,9 +437,9 @@ def LightGBM_Classifer(train_data,ind_test_data):
 
 
     TP += ((y_test_true_label == 1) & (y_test_pred_label == 1)).sum().item()
-    FP += ((y_test_true_label == 1) & (y_test_pred_label == 0)).sum().item()
+    FP += ((y_test_true_label == 0) & (y_test_pred_label == 1)).sum().item()
     TN += ((y_test_true_label == 0) & (y_test_pred_label == 0)).sum().item()
-    FN += ((y_test_true_label == 0) & (y_test_pred_label == 1)).sum().item()
+    FN += ((y_test_true_label == 1) & (y_test_pred_label == 0)).sum().item()
 
     SN = TP / (TP + FN)
     SP = TN / (TN + FP)
@@ -455,7 +455,7 @@ def LightGBM_Classifer(train_data,ind_test_data):
     test_params.append(MCC)
 
     #save test SN、SP、ACC、MCC
-    np.save("../CML_weights/LGB_test_BLOSUM62_params.npy", test_params)
+    np.save("../CML_weights/LGB_test_AAindex_params.npy", test_params)
 
     print("ind test: TP is {},FP is {},TN is {},FN is {}".format(TP, FP, TN, FN))
     print("ind test: SN is {},SP is {},ACC is {},MCC is {}".format(SN, SP, ACC, MCC))
@@ -472,11 +472,7 @@ if __name__ == '__main__':
     # ind_test_data = get_Binary_encoding(ind_test)
     # LightGBM_Classifer(train_data, ind_test_data)
 
-    # wordEmbedding:
-    # train_data=get_WordEmbedding_encoding(train)
-    # ind_test_data=get_WordEmbedding_encoding(ind_test)
-    # LightGBM_Classifer(train_data,ind_test_data)
-    #
+
 
     # AAC encode:
     # train_data=get_AAC_encoding(train)
@@ -490,11 +486,11 @@ if __name__ == '__main__':
     # LightGBM_Classifer(train_data,ind_test_data)
 
     # AAindex encode
-    # train_data=get_AAindex_encode(train)
-    # ind_test_data=get_AAindex_encode(ind_test)
-    # LightGBM_Classifer(train_data,ind_test_data)
+    train_data=get_AAindex_encode(train)
+    ind_test_data=get_AAindex_encode(ind_test)
+    LightGBM_Classifer(train_data,ind_test_data)
 
     # BLOSUM62 encode：
-    train_data=get_BLOSUM62_encoding(train)
-    ind_test_data=get_BLOSUM62_encoding(ind_test)
-    LightGBM_Classifer(train_data,ind_test_data)
+    # train_data=get_BLOSUM62_encoding(train)
+    # ind_test_data=get_BLOSUM62_encoding(ind_test)
+    # LightGBM_Classifer(train_data,ind_test_data)

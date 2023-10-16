@@ -27,8 +27,8 @@ Binary encode
 
 AA_Seq='ACDEFGHIKLMNPQRSTVWYX'
 
-train_path="../datasets/train.csv"
-ind_test_path="../datasets/ind_test.csv"
+train_path="../Datasets/train.csv"
+ind_test_path="../Datasets/ind_test.csv"
 
 def read_file(filepath):
 
@@ -401,9 +401,9 @@ def RF_Classifer(train_data,ind_test_data):
         print("混淆矩阵:",res)
 
         TP += ((y_valid_true_label == 1) & (y_valid_pred_label == 1)).sum().item()
-        FP += ((y_valid_true_label == 1) & (y_valid_pred_label == 0)).sum().item()
+        FP += ((y_valid_true_label == 0) & (y_valid_pred_label == 1)).sum().item()
         TN += ((y_valid_true_label == 0) & (y_valid_pred_label == 0)).sum().item()
-        FN += ((y_valid_true_label == 0) & (y_valid_pred_label == 1)).sum().item()
+        FN += ((y_valid_true_label == 1) & (y_valid_pred_label == 0)).sum().item()
 
         SN = TP / (TP + FN)
         SP = TN / (TN + FP)
@@ -425,7 +425,7 @@ def RF_Classifer(train_data,ind_test_data):
     train_params.append(np.mean(train_ACC))
     train_params.append(np.mean(train_MCC))
 
-    np.save("../ML_weights/RF_5kfold_BLOSUM62_params.npy",train_params)
+    np.save("../CML_weights/RF_5kfold_BLOSUM62_params.npy",train_params)
     print("Train Mean : SN is {},SP is {},ACC is {},MCC is {}".format(np.mean(train_SN), np.mean(train_SP), np.mean(train_ACC),np.mean(train_MCC)))
     print("ind_test start ...")
 
@@ -446,8 +446,8 @@ def RF_Classifer(train_data,ind_test_data):
     # ind test auc:
     test_auc=roc_auc_score(y_test,rf_clf.predict_proba(X_test)[:,1])
 
-    np.save('../ML_weights/RF_BLOSUM62_y_test_true.npy', y_test)
-    np.save('../ML_weights/RF_BLOSUM62_y_test_score.npy', rf_clf.predict_proba(X_test)[:,1])
+    np.save('../CML_weights/RF_BLOSUM62_y_test_true.npy', y_test)
+    np.save('../CML_weights/RF_BLOSUM62_y_test_score.npy', rf_clf.predict_proba(X_test)[:,1])
 
     print("test auc :",test_auc)
 
@@ -458,9 +458,9 @@ def RF_Classifer(train_data,ind_test_data):
 
 
     TP += ((y_test_true_label == 1) & (y_test_pred_label == 1)).sum().item()
-    FP += ((y_test_true_label == 1) & (y_test_pred_label == 0)).sum().item()
+    FP += ((y_test_true_label == 0) & (y_test_pred_label == 1)).sum().item()
     TN += ((y_test_true_label == 0) & (y_test_pred_label == 0)).sum().item()
-    FN += ((y_test_true_label == 0) & (y_test_pred_label == 1)).sum().item()
+    FN += ((y_test_true_label == 1) & (y_test_pred_label == 0)).sum().item()
 
     SN = TP / (TP + FN)
     SP = TN / (TN + FP)
@@ -476,7 +476,7 @@ def RF_Classifer(train_data,ind_test_data):
     test_params.append(MCC)
 
     #save test SN、SP、ACC、MCC
-    np.save("../ML_weights/RF_test_BLOSUM62_params.npy", test_params)
+    np.save("../CML_weights/RF_test_BLOSUM62_params.npy", test_params)
 
     print("ind test: TP is {},FP is {},TN is {},FN is {}".format(TP, FP, TN, FN))
     print("ind test: SN is {},SP is {},ACC is {},MCC is {}".format(SN, SP, ACC, MCC))
@@ -493,11 +493,6 @@ if __name__ == '__main__':
     # ind_test_data=get_Binary_encoding(ind_test)
     # RF_Classifer(train_data,ind_test_data)
 
-
-    #wordEmbedding:
-    # train_data=get_WordEmbedding_encoding(train)
-    # ind_test_data=get_WordEmbedding_encoding(ind_test)
-    # RF_Classifer(train_data,ind_test_data)
 
     #AAC encode:
     # train_data=get_AAC_encoding(train)
