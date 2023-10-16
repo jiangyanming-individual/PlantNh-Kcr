@@ -71,38 +71,6 @@ test_dataset, test_labels = create_encode_dataset(test_filepath)
 print(test_dataset.shape)
 
 
-
-#different plants
-wheat_filepath= "../Csv/speices_train_test_sets/test/wheat_test.csv"
-papaya_filepath= "../Csv/speices_train_test_sets/test/papaya_test.csv"
-peanut_filepath= "../Csv/speices_train_test_sets/test/peanut_test.csv"
-rice_filepath= '../Csv/speices_train_test_sets/test/rice_test.csv'
-tabacum_filepath= "../Csv/speices_train_test_sets/test/tabacum_test.csv"
-
-
-#wheat:
-# test_dataset, test_labels = create_encode_dataset(wheat_filepath)
-# print(test_dataset.shape)
-
-#tabacum:
-# test_dataset, test_labels = create_encode_dataset(tabacum_filepath)
-# print(test_dataset.shape)
-
-
-#rice:
-# test_dataset, test_labels = create_encode_dataset(rice_filepath)
-# print(test_dataset.shape)
-
-#peanut:
-
-# test_dataset, test_labels = create_encode_dataset(peanut_filepath)
-# print(test_dataset.shape)
-
-#papaya:
-# test_dataset, test_labels = create_encode_dataset(papaya_filepath)
-# print(test_dataset.shape)
-
-
 class MyDataset(Dataset):
 
     def __init__(self, datas, labels):
@@ -423,8 +391,50 @@ if __name__ == '__main__':
     # training model
     total_train(model, train_loader, device)
 
+    #-------------------------------------------------------------------------->
+    # test different species:
 
-    # to test model
+    # different plants
+    wheat_filepath = "../Csv/speices_train_test_sets/test/wheat_test.csv"
+    papaya_filepath = "../Csv/speices_train_test_sets/test/papaya_test.csv"
+    peanut_filepath = "../Csv/speices_train_test_sets/test/peanut_test.csv"
+    rice_filepath = '../Csv/speices_train_test_sets/test/rice_test.csv'
+    tabacum_filepath = "../Csv/speices_train_test_sets/test/tabacum_test.csv"
+
+    # wheat:
+    # wheat_test_dataset, wheat_test_labels = create_encode_dataset(wheat_filepath)
+    # print(wheat_test_dataset.shape)
+    # wheat_test_set = MyDataset(wheat_test_dataset, wheat_test_labels)
+    # test_loader = DataLoader(wheat_test_set, batch_size=batch_size, shuffle=True, drop_last=False)
+
+    # tabacum:
+    # tabacum_test_dataset, tabacum_test_labels = create_encode_dataset(tabacum_filepath)
+    # print(tabacum_test_dataset.shape)
+    # tabacum_test_set = MyDataset(tabacum_test_dataset, tabacum_test_labels)
+    # test_loader = DataLoader(tabacum_test_set, batch_size=batch_size, shuffle=True, drop_last=False)
+
+    # rice:
+    # rice_test_dataset, rice_test_labels = create_encode_dataset(rice_filepath)
+    # print(rice_test_dataset.shape)
+    # rice_test_set = MyDataset(rice_test_dataset, rice_test_labels)
+    # test_loader = DataLoader(rice_test_set, batch_size=batch_size, shuffle=True, drop_last=False)
+
+    # peanut:
+
+    # peanut_test_dataset, peanut_test_labels = create_encode_dataset(peanut_filepath)
+    # print(peanut_test_dataset.shape)
+    # peanut_test_set = MyDataset(peanut_test_dataset, peanut_test_labels)
+    # test_loader = DataLoader(peanut_test_set, batch_size=batch_size, shuffle=True, drop_last=False)
+
+    # papaya:
+    # papaya_test_dataset, papaya_test_labels = create_encode_dataset(papaya_filepath)
+    # print(papaya_test_dataset.shape)
+    # papaya_test_set = MyDataset(papaya_test_dataset, papaya_test_labels)
+    # test_loader = DataLoader(papaya_test_set, batch_size=batch_size, shuffle=True, drop_last=False)
+    #----------------------------------------------------------------------------------->
+
+
+    # to independent test model
     #load model
     model_path= '../model_weights/PlantNh-Kcr-FinalWeight.pth'
     model.load_state_dict(torch.load(model_path,map_location=torch.device("cuda:0" if torch.cuda.is_available() else "cpu")))
