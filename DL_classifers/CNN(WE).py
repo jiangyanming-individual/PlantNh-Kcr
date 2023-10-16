@@ -355,8 +355,8 @@ for train_index, valid_index in kf.split(train_set):
 
 
 # save tpr,fpr,auc
-np.save('../np_weights/CNN(WE)_roc_auc.npy', roc_auc)
-np.save('../np_weights/CNN(WE)_roc.npy', roc)
+# np.save('../np_weights/CNN(WE)_roc_auc.npy', roc_auc)
+# np.save('../np_weights/CNN(WE)_roc.npy', roc)
 
 
 #SN、SP、ACC、MCC

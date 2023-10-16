@@ -303,8 +303,8 @@ def train(model, train_loader,valid_loader,device):
         print("[valid:avg_acc is:{},avg_loss is :{},avg_auc is:{}]".format(avg_acc, avg_loss, avg_auc))
 
 
-        np.save('../np_weights/LSTM_y_train.npy',y_true)
-        np.save('../np_weights/LSTM_y_train_score.npy',y_score)
+        np.save('../np_weights/LSTM(WE)_y_train.npy',y_true)
+        np.save('../np_weights/LSTM(WE)_y_train_score.npy',y_score)
         # SN，SP，ACC，MCC
 
         SN = TP / (TP + FN)
@@ -357,8 +357,8 @@ for train_index, valid_index in kf.split(train_set):
     fold += 1
 
 
-np.save('../np_weights/LSTM(WE)_roc_auc.npy', roc_auc)
-np.save('../np_weights/LSTM(WE)_roc.npy', roc)
+# np.save('../np_weights/LSTM(WE)_roc_auc.npy', roc_auc)
+# np.save('../np_weights/LSTM(WE)_roc.npy', roc)
 
 
 #SN、SP、ACC、MCC

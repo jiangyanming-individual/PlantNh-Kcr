@@ -388,8 +388,8 @@ for train_index, valid_index in kf.split(train_set):
 
 
 # save tpr,fpr,auc
-np.save('../np_weights/CNN(AAindex)_roc_auc.npy', roc_auc)
-np.save('../np_weights/CNN(AAindex)_roc.npy', roc)
+# np.save('../np_weights/CNN(AAindex)_roc_auc.npy', roc_auc)
+# np.save('../np_weights/CNN(AAindex)_roc.npy', roc)
 
 
 #the result of SN,SP,ACC,MCC

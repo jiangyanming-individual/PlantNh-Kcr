@@ -392,8 +392,8 @@ for train_index, valid_index in kf.split(train_set):
     fold += 1
 
 
-np.save('../np_weights/LSTM(AAindex)_roc_auc.npy', roc_auc)
-np.save('../np_weights/LSTM(AAindex)_roc.npy', roc)
+# np.save('../np_weights/LSTM(AAindex)_roc_auc.npy', roc_auc)
+# np.save('../np_weights/LSTM(AAindex)_roc.npy', roc)
 
 
 #SN、SP、ACC、MCC

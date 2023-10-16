@@ -380,8 +380,8 @@ for train_index, valid_index in kf.split(train_set):
     fold += 1
 
 
-np.save('../np_weights/BiLSTM(WE)_roc_auc.npy', roc_auc)
-np.save('../np_weights/BiLSTM(WE)_roc.npy', roc)
+# np.save('../np_weights/BiLSTM(WE)_roc_auc.npy', roc_auc)
+# np.save('../np_weights/BiLSTM(WE)_roc.npy', roc)
 
 
 #the results of SN, SP, ACC, MCC on five-fold cross-validation
