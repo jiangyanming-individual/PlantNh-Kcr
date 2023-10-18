@@ -138,8 +138,6 @@ class Model_LSTM_MutilHeadSelfAttention(nn.Module):
         # print("context shape:",context.shape)
         return (Bilstm_outputs, MutilHead_output), context
 
-import warnings
-warnings.filterwarnings("ignore")
 
 input_size=len(Amino_acid_sequence)
 hidden_size = 64

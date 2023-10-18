@@ -4,10 +4,9 @@ import torch
 from torch import nn
 from torch.utils.data import Dataset, DataLoader
 import torch.nn.functional as F
-from matplotlib import pyplot as plt
 import numpy as np
-from sklearn import metrics
-from sklearn.metrics import roc_auc_score, roc_curve, auc
+from sklearn.manifold import TSNE
+import matplotlib.pyplot as plt
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -194,9 +193,7 @@ class KcrNet(nn.Module):
         return (inputs,First_outputs,Second_outputs,Third_outputs,visual_outputs,total_outputs,Linear_output),x
 
 
-import numpy as np
-import warnings
-warnings.filterwarnings("ignore")
+
 
 batch_size = 128
 learn_rate = 0.001
@@ -211,8 +208,7 @@ model.to(device)
 model_path= "../model_weights/PlantNh-Kcr-FinalWeight.pth"
 model.load_state_dict(torch.load(model_path,map_location=torch.device("cuda:0" if torch.cuda.is_available() else "cpu")))
 
-from sklearn.manifold import TSNE
-import matplotlib.pyplot as plt
+
 
 # t-SNE
 test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=True, drop_last=False)

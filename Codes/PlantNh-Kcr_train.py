@@ -8,10 +8,17 @@ import torch
 from torch import nn
 from torch.utils.data import Dataset, DataLoader
 import torch.nn.functional as F
-from matplotlib import pyplot as plt
-import numpy as np
-from sklearn import metrics
 from sklearn.metrics import roc_auc_score,roc_curve,auc
+import numpy as np
+import math
+import matplotlib.pyplot as plt
+from numpy import interp
+from sklearn.model_selection import KFold
+from sklearn import metrics
+from torch.utils.data import Subset
+from torch.utils.data import DataLoader
+import warnings
+warnings.filterwarnings("ignore")
 
 Amino_acid_sequence = 'ACDEFGHIKLMNPQRSTVWYX'
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -210,12 +217,6 @@ model=KcrNet()
 print(model)
 
 
-import numpy as np
-import math
-import matplotlib.pyplot as plt
-from numpy import interp
-import warnings
-warnings.filterwarnings("ignore")
 
 
 # the number of epochs
@@ -372,13 +373,6 @@ def train(model, train_loader, valid_loader,device):
 
 
 # five-fold cross-validation
-from sklearn.model_selection import KFold
-from sklearn import metrics
-from torch.utils.data import Subset
-
-#DataLoader
-from torch.utils.data import DataLoader
-
 kf = KFold(n_splits=5, shuffle=True)
 fold = 1
 
