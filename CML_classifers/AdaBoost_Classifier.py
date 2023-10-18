@@ -117,7 +117,7 @@ def get_EGAAC_encoding(data):
 
     X=[]
     y=[]
-    """分为5组"""
+
     group = {
         'Aliphatic group': 'GAVLMI',
         'Aromatic groups': 'FYW',
@@ -138,11 +138,10 @@ def get_EGAAC_encoding(data):
         # print(counter)
 
         for key in groupKeys:
-            #遍历每一组:统计每组的个数
+
             for aa in group[key]:
                 groupCount_dict[key]=groupCount_dict.get(key,0)+counter[aa]
 
-        #计算每组的概率：
         for key in groupKeys:
             one_code.append(round(groupCount_dict[key] / len(seq), 3))
 
@@ -178,7 +177,7 @@ def get_AAindex_encode(data):
     AAindex = []
 
     for i in records:
-        # print(i.rstrip().split()[0])  #得到AAindex的names
+        # print(i.rstrip().split()[0])
         AAindex_names.append(i.rstrip().split()[0] if i.rstrip() != '' else None)
         AAindex.append(i.rstrip().split()[1:] if i.rstrip() != '' else None)
 
@@ -194,7 +193,7 @@ def get_AAindex_encode(data):
                 tempAAindex_names.append(p)
                 tempAAindex.append(AAindex[AAindex_names.index(p)])
 
-        # 如果找到了，就将前29种的性质直接替代AAindx；
+
         if len(tempAAindex_names) != 0:
             AAindex_names = tempAAindex_names
             AAindex = tempAAindex
@@ -209,12 +208,12 @@ def get_AAindex_encode(data):
         one_code=[]
         for aa in seq:
             if aa == 'X':
-                for aaindex in AAindex:  # 为X 全部赋值为0
+                for aaindex in AAindex:
                     one_code.append(0)
                 continue
             for aaindex in AAindex:
 
-                one_code.append(float(aaindex[seq_index.get(aa)]))  # 添加存在的aaindex;
+                one_code.append(float(aaindex[seq_index.get(aa)]))
         X.append(one_code) #(29,29)
         # print(one_code)
         y.append(int(label))
@@ -259,7 +258,7 @@ def get_BLOSUM62_encoding(data):
         'X': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # -
     }
 
-    # 对blosum62取均值：
+
     for key in blosum62:
         for index,value in enumerate(blosum62[key]):
             blosum62[key][index]=round((value + 4) / 15,3)
@@ -337,7 +336,7 @@ train_MCC=[]
 
 def AdaBoost_Classifer(train_data,ind_test_data):
 
-    # 创建SVM分类器
+
     ada_clf = AdaBoostClassifier(n_estimators=100, random_state=42)
 
     X_train,y_train=train_data
@@ -388,7 +387,7 @@ def AdaBoost_Classifer(train_data,ind_test_data):
         y_valid_true_label=this_valid_y
         y_valid_pred_label=y_valid_pred
 
-        #混淆矩阵：
+
         res=confusion_matrix(y_valid_true_label,y_valid_pred_label)
         print("混淆矩阵:",res)
 
