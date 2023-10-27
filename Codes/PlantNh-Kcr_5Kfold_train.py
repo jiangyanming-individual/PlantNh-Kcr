@@ -3,7 +3,6 @@
 # software: PyCharm
 # project:PlantNh-Kcr
 
-
 import torch
 from torch import nn
 from torch.utils.data import Dataset, DataLoader
@@ -423,11 +422,14 @@ np.save('../np_weights/PlantNh-Kcr_5kfold_SN_SP_ACC_MCC.npy', kfold_SN_SP_ACC_MC
 print("5kfold: SN is: {}, SP is: {}, ACC is: {},MCC is: {}".format(mean_SN,mean_SP,mean_ACC,mean_MCC))
 
 # the visualization result of five-fold cross-validation
+
 def Kf_show(plt, base_fpr, roc, roc_auc):
 
+    plt.figure(dpi=600)
     for i, item in enumerate(roc):
         fpr, tpr = item
         plt.plot(fpr, tpr, label="ROC fold {} (AUC={:.4f})".format(i + 1, roc_auc[i]), lw=1, alpha=0.3)
+
 
     #calculate mean value
     plt.plot(base_fpr, np.average(tprs, axis=0),
@@ -442,7 +444,7 @@ def Kf_show(plt, base_fpr, roc, roc_auc):
     plt.title('ROC curve')
     plt.xlabel('False Positive Rate', fontweight='bold')
     plt.ylabel('True Positive Rate', fontweight='bold')
-    # plt.savefig('../figures/PlantNh-Kcr.png')
+    plt.savefig('../figures/PlantNh-Kcr-5Kfold.png')
     plt.show()
 
 Kf_show(plt, base_fpr, roc, roc_auc)
