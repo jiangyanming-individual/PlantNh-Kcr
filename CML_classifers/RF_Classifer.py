@@ -37,7 +37,6 @@ def read_file(filepath):
 
 
         f.close()
-    # print(data)
     return data
 
 def get_Binary_encoding(data):
@@ -46,9 +45,6 @@ def get_Binary_encoding(data):
     y=[]
 
     for seq,label in data:
-
-        # print(seq)
-        # print(label)
         one_code=[]
         for i in seq:
             vector=[0]*21
@@ -56,12 +52,10 @@ def get_Binary_encoding(data):
 
             one_code.append(vector)
 
-        # print(one_code)
         X.append(one_code)
         y.append(int(label))
 
     X=np.array(X)
-    # print(X.shape)
     n,seq_len,dim=X.shape
 
     # reshape
@@ -81,11 +75,8 @@ def get_AAC_encoding(data):
 
     for seq,label in data:
 
-        # print(seq)
-        # print(label)
         one_code=[]
         counter=Counter(seq)
-        # print(counter)
         for key in counter:
             # 计算概率
             counter[key] = round(counter[key] / len(seq), 3)
@@ -93,15 +84,11 @@ def get_AAC_encoding(data):
         for item in AA_Seq:
             one_code.append(counter[item])
 
-        # print(one_code)
         X.append(one_code)
         y.append(int(label))
 
     X=np.array(X)
-    # print(X.shape)
     n,dim=X.shape
-    #
-    # # reshape
     print("new X shape :",X.shape)
     #
     y=np.array(y)
@@ -127,12 +114,9 @@ def get_EGAAC_encoding(data):
 
     for seq,label in data:
 
-        # print(seq)
-        # print(label)
         one_code=[]
         groupCount_dict = {}
         counter=Counter(seq)
-        # print(counter)
 
         for key in groupKeys:
             #遍历每一组:统计每组的个数
@@ -148,10 +132,7 @@ def get_EGAAC_encoding(data):
         y.append(int(label))
 
     X=np.array(X)
-    # print(X.shape)
     n,dim=X.shape #(n,5)
-    #
-    # # reshape
     print("new X shape :",X.shape)
     #
     y=np.array(y)
@@ -196,8 +177,6 @@ def get_AAindex_encode(data):
             AAindex_names = tempAAindex_names
             AAindex = tempAAindex
 
-
-    # print("AAindex:",AAindex)
     seq_index = {} #(0-19)
     for i in range(len(AA)):
         seq_index[AA[i]] = i
@@ -210,14 +189,11 @@ def get_AAindex_encode(data):
                     one_code.append(0)
                 continue
             for aaindex in AAindex:
-                # print(type(aaindex[seq_index.get(aa)]))
                 one_code.append(aaindex[seq_index.get(aa)])  # 添加存在的aaindex;
         X.append(one_code) #(29,29)
-        # print(one_code)
         y.append(int(label))
 
     X=np.array(X)
-    # print(X.shape)
     n,seq_len=X.shape
     print("new X shape :",X.shape)
 
@@ -262,14 +238,10 @@ def get_BLOSUM62_encoding(data):
             blosum62[key][index]=round((value + 4) / 15,3)
 
     for seq,label in data:
-        # print(seq)
-        # print(label)
         one_code=[]
         for aa in seq:
             # print(blosum62.get(aa))
             one_code.extend(blosum62.get(aa)) #(29,21)
-
-        # print("one_code:",one_code)
 
         X.append(one_code)
         y.append(int(label))
@@ -305,12 +277,10 @@ def get_WordEmbedding_encoding(data):
         one_code=torch.tensor(one_code)
         one_code=word_Embedding(one_code)
 
-        # print(one_code)
         X.append(one_code.detach().cpu().numpy())
         y.append(int(label))
 
     X=np.array(X)
-    # print(X.shape)
     n,seq_len,dim=X.shape
 
     # reshape

@@ -24,37 +24,30 @@ test_filepath= '../Datasets/ind_test.csv'
 #binary encoding
 def create_encode_dataset(filepath):
     data_list = []
-    result_seq_datas = []
-    result_seq_labels = []
     with open(filepath, encoding='utf-8') as f:
 
         for line in f.readlines():
-            x_data_sequence, label = list(line.strip('\n').split(','))
-            data_list.append((x_data_sequence, label))
+            sequence, label = list(line.strip('\n').split(','))
+            data_list.append((sequence, label))
 
-        # print(data_list)
-        # print(len(data_list))
+    result_seq_data = []
+    result_seq_labels = []
 
     for data in data_list:
-        # get sequence and label
-        code = []
-
-        result_seq_labels.append(int(data[1]))
-        for seq in data[0]:
-            one_code = []
+        seq,label=data[0],data[1]
+        one_seq = []
+        result_seq_labels.append(int(label))
+        for amino_acid in seq:
+            one_amino_acid = []
             for amino_acid_index in Amino_acid_sequence:
-                if amino_acid_index == seq:
+                if amino_acid_index == amino_acid:
                     flag = 1
                 else:
                     flag = 0
-                one_code.append(flag)
-
-            code.extend(one_code)
-        result_seq_datas.append(code)
-        # print(one_seq_data)
-
-    return np.array(result_seq_datas), np.array(result_seq_labels, dtype=np.int64)
-
+                one_amino_acid.append(flag)
+            one_seq.extend(one_amino_acid)
+        result_seq_data.append(one_seq)
+    return np.array(result_seq_data), np.array(result_seq_labels, dtype=np.int64)
 
 # train_dataset, train_labels = create_encode_dataset(train_filepath)
 # print(train_dataset.shape)

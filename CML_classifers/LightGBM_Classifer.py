@@ -36,7 +36,6 @@ def read_file(filepath):
 
 
         f.close()
-    # print(data)
     return data
 
 def get_Binary_encoding(data):
@@ -53,14 +52,10 @@ def get_Binary_encoding(data):
 
             one_code.append(vector)
 
-        # print(one_code)
         X.append(one_code)
         y.append(int(label))
-
     X=np.array(X)
-    # print(X.shape)
     n,seq_len,dim=X.shape
-
     # reshape
     X=np.reshape(X,(n,seq_len * dim))
     print("new X shape :",X.shape)
@@ -92,10 +87,7 @@ def get_AAC_encoding(data):
         y.append(int(label))
 
     X=np.array(X)
-    # print(X.shape)
     n,dim=X.shape
-    #
-    # # reshape
     print("new X shape :",X.shape)
     #
     y=np.array(y)
@@ -124,8 +116,6 @@ def get_EGAAC_encoding(data):
         one_code=[]
         groupCount_dict = {}
         counter=Counter(seq)
-        # print(counter)
-
         for key in groupKeys:
 
             for aa in group[key]:
@@ -134,14 +124,11 @@ def get_EGAAC_encoding(data):
         for key in groupKeys:
             one_code.append(round(groupCount_dict[key] / len(seq), 3))
 
-        # print("one_code:",one_code)
         X.append(one_code)
         y.append(int(label))
 
     X=np.array(X)
-    # print(X.shape)
     n,dim=X.shape #(n,5)
-    # # reshape
     print("new X shape :",X.shape)
     #
     y=np.array(y)
@@ -201,17 +188,14 @@ def get_AAindex_encode(data):
                 # print(type(aaindex[seq_index.get(aa)]))
                 one_code.append(float(aaindex[seq_index.get(aa)]))  # append AAindex;
         X.append(one_code) #(29,29)
-        # print(one_code)
         y.append(int(label))
 
     X=np.array(X)
-    # print(X.shape)
     n,seq_len=X.shape
     print("new X shape :",X.shape)
 
     y=np.array(y)
     print(y.shape)
-
     return X,y
 
 
@@ -249,12 +233,10 @@ def get_BLOSUM62_encoding(data):
             blosum62[key][index]=round((value + 4) / 15,3)
 
     for seq,label in data:
-        # print(seq)
-        # print(label)
+
         one_code=[]
         for aa in seq:
-            # print(blosum62.get(aa))
-            one_code.extend(blosum62.get(aa)) #(29,21)
+            one_code.extend(blosum62.get(aa))
 
         X.append(one_code)
         y.append(int(label))
@@ -290,12 +272,10 @@ def get_WordEmbedding_encoding(data):
         one_code=torch.tensor(one_code)
         one_code=word_Embedding(one_code)
 
-        # print(one_code)
         X.append(one_code.detach().cpu().numpy())
         y.append(int(label))
 
     X=np.array(X)
-    # print(X.shape)
     n,seq_len,dim=X.shape
 
     # reshape
@@ -361,7 +341,6 @@ def LightGBM_Classifer(train_data,ind_test_data):
         #acu:
         y_true.append(this_valid_y)
         y_score.append(lgb_clf.predict_proba(this_valid_x)[:,1])
-        # print("y_score:",y_score)
 
 
         # 5Kfold SN、SP、ACC、MCC
