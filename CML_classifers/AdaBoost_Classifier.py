@@ -7,15 +7,20 @@
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.metrics import accuracy_score,auc,roc_auc_score,roc_curve
 import numpy as np
-import warnings
 import math
-warnings.filterwarnings("ignore")
+from sklearn.metrics import roc_curve, auc
+from sklearn import metrics
 from sklearn.model_selection import KFold
+from sklearn.utils import shuffle
 from sklearn.metrics import confusion_matrix
+from sklearn.svm import SVC
 from collections import Counter
+from numpy import interp
 import torch.nn as nn
 import torch
-
+import random
+import warnings
+warnings.filterwarnings("ignore")
 
 """
 Binary encode
@@ -34,8 +39,6 @@ def read_file(filepath):
         for line in f.readlines():
             seq,label=line.strip().split(',')
             data.append((seq,label))
-
-
         f.close()
     return data
 
@@ -43,7 +46,6 @@ def get_Binary_encoding(data):
 
     X=[]
     y=[]
-
     for seq,label in data:
         one_code=[]
         for i in seq:
@@ -56,43 +58,33 @@ def get_Binary_encoding(data):
 
     X=np.array(X)
     n,seq_len,dim=X.shape
-
     # reshape
     X=np.reshape(X,(n,seq_len * dim))
     print("new X shape :",X.shape)
-
     y=np.array(y)
     print(y.shape)
-
     return X,y
-
 
 def get_AAC_encoding(data):
 
     X=[]
     y=[]
-
     for seq,label in data:
         one_code=[]
         counter=Counter(seq)
         for key in counter:
             # 计算概率
             counter[key] = round(counter[key] / len(seq), 3)
-
         for item in AA_Seq:
             one_code.append(counter[item])
-
         # print(one_code)
         X.append(one_code)
         y.append(int(label))
-
     X=np.array(X)
     n,dim=X.shape
     print("new X shape :",X.shape)
-    #
     y=np.array(y)
     print(y.shape)
-
     return X,y
 
 
@@ -110,18 +102,14 @@ def get_EGAAC_encoding(data):
     }
 
     groupKeys = group.keys()
-
     for seq,label in data:
         one_code=[]
         groupCount_dict = {}
         counter=Counter(seq)
         # print(counter)
-
         for key in groupKeys:
-
             for aa in group[key]:
                 groupCount_dict[key]=groupCount_dict.get(key,0)+counter[aa]
-
         for key in groupKeys:
             one_code.append(round(groupCount_dict[key] / len(seq), 3))
         X.append(one_code)
@@ -129,27 +117,19 @@ def get_EGAAC_encoding(data):
 
     X=np.array(X)
     n,dim=X.shape #(n,5)
-    #
-    # # reshape
     print("new X shape :",X.shape)
-    #
     y=np.array(y)
     print(y.shape)
-
     return X,y
-
 
 def get_AAindex_encode(data):
 
     X=[]
     y=[]
-
     with open('../features_encode/AAindex/AAindex_normalized.txt', mode='r') as f:
         records=f.readlines()[1:]
         f.close()
-
     AA = 'ARNDCQEGHILKMFPSTWYV'
-
     AAindex_names = []
     AAindex = []
 
@@ -158,7 +138,6 @@ def get_AAindex_encode(data):
         AAindex.append(i.rstrip().split()[1:] if i.rstrip() != '' else None)
 
     props = 'FINA910104:LEVM760101:JACR890101:ZIMJ680104:RADA880108:JANJ780101:CHOC760102:NADH010102:KYTJ820101:NAKH900110:GUYH850101:EISD860102:HUTJ700103:OLSK800101:JURD980101:FAUJ830101:OOBM770101:GARJ730101:ROSM880102:RICJ880113:KIDA850101:KLEP840101:FASG760103:WILM950103:WOLS870103:COWR900101:KRIW790101:AURR980116:NAKH920108'.split(':')
-
     if props:
         tempAAindex_names = []
         tempAAindex = []
@@ -167,17 +146,13 @@ def get_AAindex_encode(data):
             if AAindex_names.index(p) != -1:
                 tempAAindex_names.append(p)
                 tempAAindex.append(AAindex[AAindex_names.index(p)])
-
-
         if len(tempAAindex_names) != 0:
             AAindex_names = tempAAindex_names
             AAindex = tempAAindex
 
-
     seq_index = {} #(0-19)
     for i in range(len(AA)):
         seq_index[AA[i]] = i
-
     for seq,label in data:
         one_code=[]
         for aa in seq:
@@ -186,7 +161,6 @@ def get_AAindex_encode(data):
                     one_code.append(0)
                 continue
             for aaindex in AAindex:
-
                 one_code.append(float(aaindex[seq_index.get(aa)]))
         X.append(one_code) #(29,29)
         # print(one_code)
@@ -195,12 +169,9 @@ def get_AAindex_encode(data):
     X=np.array(X)
     n,seq_len=X.shape
     print("new X shape :",X.shape)
-
     y=np.array(y)
     print(y.shape)
-
     return X,y
-
 
 def get_BLOSUM62_encoding(data):
 
@@ -230,27 +201,19 @@ def get_BLOSUM62_encoding(data):
         'V': [0, -3, -3, -3, -1, -2, -2, -3, -3, 3, 1, -2, 1, -1, -2, -2, 0, -3, -1, 4, 0],  # V
         'X': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # X
     }
-
-
     for key in blosum62:
         for index,value in enumerate(blosum62[key]):
             blosum62[key][index]=round((value + 4) / 15,3)
-
     for seq,label in data:
         one_code=[]
         for aa in seq:
             one_code.extend(blosum62.get(aa)) #(29,21)
-
         X.append(one_code)
         y.append(int(label))
-
-
     X=np.array(X)
     print("X shape:",X.shape)
-
     y=np.array(y)
     print(y.shape)
-
     return X,y
 
 
@@ -259,198 +222,228 @@ def get_WordEmbedding_encoding(data):
 
     X=[]
     y=[]
-
     AA = 'ARNDCQEGHILKMFPSTWYVX'
-
     seq_index = {} #(0-20)
     for i in range(len(AA)):
         seq_index[AA[i]] = i
     for seq,label in data:
-
-
         one_code=[]
         for i in seq:
             one_code.append(seq_index.get(i))
         word_Embedding=nn.Embedding(num_embeddings=len(AA),embedding_dim=5)
         one_code=torch.tensor(one_code)
         one_code=word_Embedding(one_code)
-
         X.append(one_code.detach().cpu().numpy())
         y.append(int(label))
-
     X=np.array(X)
     n,seq_len,dim=X.shape
 
     # reshape
     X=np.reshape(X,(n,seq_len * dim))
     print("new X shape :",X.shape)
-
     y=np.array(y)
     print(y.shape)
 
     return X,y
 
+# train
+train_SN = []
+train_SP = []
+train_ACC = []
+train_F1_score = []
+train_MCC = []
+train_AUC = []
 
+def Calculate_confusion_matrix(y_test_true,y_pred_label):
 
-train_params=[]
-
-train_SN=[]
-train_SP=[]
-train_ACC=[]
-train_MCC=[]
-
-
-def AdaBoost_Classifer(train_data,ind_test_data):
-
-
-    ada_clf = AdaBoostClassifier(n_estimators=100, random_state=42)
-
-    X_train,y_train=train_data
-
-    kf=KFold(n_splits=5,shuffle=True)
-
-    fold=1
-
-    y_true=[]
-    y_score=[]
-
-    for train_index,valid_index in kf.split(X_train,y_train):
-
-        TP, FP, TN, FN = 0, 0, 0, 0
-        print("第{}次交叉验证开始...".format(fold))
-        # print(train_index)
-        # print(valid_index)
-        #
-        this_train_x,this_train_y=X_train[train_index],y_train[train_index]
-
-        # print(this_train_x)
-        # print(this_train_y)
-        #
-        this_valid_x,this_valid_y=X_train[valid_index],y_train[valid_index]
-
-        ada_clf.fit(this_train_x,this_train_y)
-
-        # train fit
-        y_train_pred=ada_clf.predict(this_train_x)
-
-        # valid fit
-        y_valid_pred=ada_clf.predict(this_valid_x)
-
-        #acc:
-        train_acc = accuracy_score(this_train_y, y_train_pred)
-        valid_acc = accuracy_score(this_valid_y, y_valid_pred)
-
-        print("训练集准确率: {:.2f}%".format(train_acc * 100))
-        print("验证集准确率: {:.2f}%".format(valid_acc * 100))
-
-        #acu:
-        y_true.append(this_valid_y)
-        y_score.append(ada_clf.predict_proba(this_valid_x)[:,1])
-        # print("y_score:",y_score)
-
-        # 5Kfold SN、SP、ACC、MCC
-
-        y_valid_true_label=this_valid_y
-        y_valid_pred_label=y_valid_pred
-
-
-        res=confusion_matrix(y_valid_true_label,y_valid_pred_label)
-        print("混淆矩阵:",res)
-
-        TP += ((y_valid_true_label == 1) & (y_valid_pred_label == 1)).sum().item()
-        FP += ((y_valid_true_label == 0) & (y_valid_pred_label == 1)).sum().item()
-        TN += ((y_valid_true_label == 0) & (y_valid_pred_label == 0)).sum().item()
-        FN += ((y_valid_true_label == 1) & (y_valid_pred_label == 0)).sum().item()
-
-        SN = TP / (TP + FN)
-        SP = TN / (TN + FP)
-        ACC = (TP + TN) / (TP + TN + FP + FN)
-        MCC = ((TP * TN) - (FP * FN)) / math.sqrt((TP + FP) * (TP + FN) * (TN + FP) * (TN + FN))
-
-        train_SN.append(SN)
-        train_SP.append(SP)
-        train_ACC.append(ACC)
-        train_MCC.append(MCC)
-
-        print("Train TP is {},FP is {},TN is {},FN is {}".format(TP, FP, TN, FN))
-        print("Train SN is {},SP is {},ACC is {},MCC is {}".format(SN, SP, ACC, MCC))
-
-        fold+=1
-
-    train_params.append(np.mean(train_SN))
-    train_params.append(np.mean(train_SP))
-    train_params.append(np.mean(train_ACC))
-    train_params.append(np.mean(train_MCC))
-
-    np.save("../CML_weights/Ada_5kfold_BLOSUM62_params.npy", train_params)
-    print("Train Mean : SN is {},SP is {},ACC is {},MCC is {}".format(np.mean(train_SN), np.mean(train_SP), np.mean(train_ACC),np.mean(train_MCC)))
-    print("ind_test start ...")
-
-
-    TP, FP, TN, FN = 0, 0, 0, 0
-    y_true=np.concatenate(y_true,axis=0)
-    y_score=np.concatenate(y_score,axis=0)
-
-    fpr,tpr,_=roc_curve(y_true,y_score)
-    valid_auc=auc(fpr,tpr)
-    print("valid auc :",valid_auc)
-
-    X_test, y_test = ind_test_data
-    y_test_pred=ada_clf.predict(X_test)
-    test_acc=accuracy_score(y_test,y_test_pred)
-
-    print("测试集准确率 {:.2f}:".format(test_acc * 100))
-    # ind test auc:
-    test_auc=roc_auc_score(y_test,ada_clf.predict_proba(X_test)[:,1])
-
-    np.save('../CML_weights/Ada_BLOSUM62_y_test_true.npy', y_test)
-    np.save('../CML_weights/Ada_BLOSUM62_y_test_score.npy', ada_clf.predict_proba(X_test)[:, 1])
-
-    print("test auc :",test_auc)
-
-    #calculate SN、SP、ACC、MCC
-
-    y_test_true_label=y_test
-    y_test_pred_label=y_test_pred
-
-
-    TP += ((y_test_true_label == 1) & (y_test_pred_label == 1)).sum().item()
-    FP += ((y_test_true_label == 0) & (y_test_pred_label == 1)).sum().item()
-    TN += ((y_test_true_label == 0) & (y_test_pred_label == 0)).sum().item()
-    FN += ((y_test_true_label == 1) & (y_test_pred_label == 0)).sum().item()
+    conf_matrix = confusion_matrix(y_test_true, y_pred_label)
+    TN = conf_matrix[0][0]
+    FP = conf_matrix[0][1]
+    FN = conf_matrix[1][0]
+    TP = conf_matrix[1][1]
 
     SN = TP / (TP + FN)
     SP = TN / (TN + FP)
     ACC = (TP + TN) / (TP + TN + FP + FN)
     MCC = ((TP * TN) - (FP * FN)) / math.sqrt((TP + FP) * (TP + FN) * (TN + FP) * (TN + FN))
+    F1Score = (2 * TP) / float(2 * TP + FP + FN)
+
+    return (TN,TP,FN,FP),(SN,SP,ACC,MCC,F1Score)
+
+def Calcuate_mean_std_metrics_values(total_SN,total_SP,total_ACC,total_F1_score,total_MCC,total_AUC):
+    # Calculate mean and std metrics values:
+    mean_SN = np.mean(total_SN)
+    mean_SP = np.mean(total_SP)
+    mean_ACC = np.mean(total_ACC)
+    mean_F1_score = np.mean(total_F1_score)
+    mean_MCC = np.mean(total_MCC)
+    mean_AUC = np.mean(total_AUC)
+
+    std_SN = np.std(total_SN)
+    std_SP = np.std(total_SP)
+    std_ACC = np.std(total_ACC)
+    std_F1_score = np.std(total_F1_score)
+    std_MCC = np.std(total_MCC)
+    std_AUC = np.std(total_AUC)
+
+    mean_metrics = []
+    mean_metrics.append(mean_SN)
+    mean_metrics.append(mean_SP)
+    mean_metrics.append(mean_ACC)
+    mean_metrics.append(mean_F1_score)
+    mean_metrics.append(mean_MCC)
+    mean_metrics.append(mean_AUC)
+
+    std_metrics = []
+    std_metrics.append(std_SN)
+    std_metrics.append(std_SP)
+    std_metrics.append(std_ACC)
+    std_metrics.append(std_F1_score)
+    std_metrics.append(std_MCC)
+    std_metrics.append(std_AUC)
+
+    print(
+        "ind test Mean metrics : SN is {:.3f},SP is {:.3f},ACC is {:.3f},F1-score is {:.3f},MCC is {:.3f},AUC is {:.3f}".
+        format(mean_SN, mean_SP, mean_ACC, mean_F1_score, mean_MCC, mean_AUC))
+    print(
+        "ind test std metrics : SN is {:.4f},SP is {:.4f},ACC is {:.4f},F1-score is {:.4f},MCC is {:.4f},AUC is {:.4f}".
+        format(std_SN, std_SP, std_ACC, std_F1_score, std_MCC, std_AUC))
+
+def cross_validation(ada_model,X_train,y_train):
+    kf = KFold(n_splits=5, shuffle=True)
+    fold = 1
+    for train_index, valid_index in kf.split(X_train, y_train):
+        print("第{}次交叉验证开始...".format(fold))
+        this_train_x, this_train_y = X_train[train_index], y_train[train_index]
+        this_valid_x, this_valid_y = X_train[valid_index], y_train[valid_index]
+        ada_model.fit(this_train_x, this_train_y)
+        # train fit
+        y_train_pred = ada_model.predict(this_train_x)
+        # valid fit
+        y_valid_pred = ada_model.predict(this_valid_x)
+        # acc:
+        train_acc = accuracy_score(this_train_y, y_train_pred)
+        valid_acc = accuracy_score(this_valid_y, y_valid_pred)
+        print("训练集准确率: {:.2f}%".format(train_acc * 100))
+        print("验证集准确率: {:.2f}%".format(valid_acc * 100))
+        # acu:
 
 
-    test_params=[]
+        # 5Kfold SN、SP、ACC、F1_score,MCC
+        y_valid_true_label = this_valid_y
+        y_valid_score=ada_model.predict_proba(this_valid_x)[:, 1]
+        y_valid_pred_label = y_valid_pred
 
-    test_params.append(SN)
-    test_params.append(SP)
-    test_params.append(ACC)
-    test_params.append(MCC)
+        print("混淆矩阵")
+        (TN, TP, FN, FP), (SN, SP, ACC, MCC, F1Score) = Calculate_confusion_matrix(y_valid_true_label,
+                                                                                   y_valid_pred_label)
+        valid_auc=roc_auc_score(y_valid_true_label,y_valid_score)
 
-    #save test SN、SP、ACC、MCC
-    np.save("../CML_weights/Ada_test_BLOSUM62_params.npy", test_params)
+        train_SN.append(SN)
+        train_SP.append(SP)
+        train_ACC.append(ACC)
+        train_F1_score.append(F1Score)
+        train_MCC.append(MCC)
+        train_AUC.append(valid_auc)
+
+        print("Train TP is {},FP is {},TN is {},FN is {}".format(TP, FP, TN, FN))
+        print("Train SN is {},SP is {},ACC is {},F1-score is {}, MCC is {},AUC is {}".format(SN, SP, ACC, F1Score, MCC,valid_auc))
+
+        fold += 1
+
+    print(
+        "Train Mean metrics values: SN is {:.3f},SP is {:.3f},ACC is {:.3f},F1-score is {:.3f},MCC is {:.3f},AUC is {:.3f}".format(np.mean(train_SN),
+                                                                                   np.mean(train_SP),
+                                                                                   np.mean(train_ACC),
+                                                                                   np.mean(train_F1_score),
+                                                                                   np.mean(train_MCC),np.mean(train_AUC)))
+    print("Train Std metrics values : SN is {:.4f},SP is {:.4f},ACC is {:.4f},F1-score is {:.4f},MCC is {:.4f},AUC is {:.4f}".format(np.std(train_SN),
+                                                                                    np.std(train_SP),
+                                                                                    np.std(train_ACC),
+                                                                                    np.std(train_F1_score),
+                                                                                    np.std(train_MCC),
+                                                                                    np.std(train_AUC)))
+def independent_test(ada_model,X_train,y_train,X_test,y_test,random_seed):
+    print("-----------------------------ind_test start------------------------")
+
+    X_train,y_train=shuffle(X_train,y_train,random_state=random_seed)
+    X_test, y_test = shuffle(X_test, y_test, random_state=random_seed)
+    #fit
+    ada_model.fit(X_train, y_train)
+    #predict
+    y_test_pred_label= ada_model.predict(X_test)
+    # ind test auc:
+    y_test_score=ada_model.predict_proba(X_test)[:, 1]
+    # calculate SN、SP、ACC、MCC
+    y_test_true_label = y_test
+    y_test_pred_label = y_test_pred_label
+    fpr, tpr, _ = roc_curve(y_test, y_test_score)
+    test_auc = metrics.auc(fpr, tpr) #y_test_true, y_test_score
+    print("test auc :", test_auc)
+    # mean tpr and fpr
+    tpr = interp(mean_fpr, fpr, tpr)
+    tpr[0] = 0.0
+    tprs.append(tpr)
+
+    (TN, TP, FN, FP), (SN, SP, ACC, MCC, F1Score) = Calculate_confusion_matrix(y_test_true_label, y_test_pred_label)
+    total_SN.append(SN)
+    total_SP.append(SP)
+    total_ACC.append(ACC)
+    total_F1_score.append(F1Score)
+    total_MCC.append(MCC)
+    total_AUC.append(test_auc)
 
     print("ind test: TP is {},FP is {},TN is {},FN is {}".format(TP, FP, TN, FN))
-    print("ind test: SN is {},SP is {},ACC is {},MCC is {}".format(SN, SP, ACC, MCC))
+    print("ind test: SN is {:.4f},SP is {:.4f},ACC is {:.4f},F1-score is {:.4f},MCC is {:.4f},AUC is {:.4f}".format(SN, SP, ACC, F1Score, MCC,test_auc))
+
+def AdaBoost_Classifer(train_data,ind_test_data):
+
+
+    ada_clf = AdaBoostClassifier(n_estimators=100, random_state=42)
+    X_train,y_train=train_data
+    X_test,y_test=ind_test_data
+    #cross validation:
+    cross_validation(ada_clf,X_train,y_train)
+    # ind test:
+    random_seed=42
+    for i in range(10):
+        np.random.seed(random_seed)
+        ada_clf = AdaBoostClassifier(n_estimators=100,random_state=random_seed)
+        random_seed += 10
+        independent_test(ada_clf,X_train,y_train,X_test,y_test,random_seed)
+    Calcuate_mean_std_metrics_values(total_SN, total_SP, total_ACC, total_F1_score, total_MCC, total_AUC)
+    #save mean tprs and fprs
+    mean_tpr=np.mean(tprs,axis=0)
+    np.save('../CML_weights/Ada_AAindex_test_mean_fpt.npy', mean_fpr)
+    np.save('../CML_weights/Ada_AAindex_test_mean_tpr.npy', mean_tpr)
+    np.save('../CML_weights/Ada_AAindex_test_AUCs.npy', total_AUC)
+    print("mean AUC value is {:.3f}".format(metrics.auc(mean_fpr,mean_tpr)))
+    print("mean AUC value is {:.3f}".format(np.mean(total_AUC)))
+    print("std AUC values is {:.4f}".format(np.std(total_AUC)))
 
 
 if __name__ == '__main__':
 
+    # ind_test
+    total_SN = []
+    total_SP = []
+    total_ACC = []
+    total_F1_score = []
+    total_MCC = []
+    total_AUC = []#add AUC
+
+
+    mean_fpr = np.linspace(0, 1, 101)
+    mean_fpr[-1] = 1.0
+    tprs = []
+
     train=read_file(train_path)
     ind_test=read_file(ind_test_path)
-
 
     #binary encode:
     # train_data=get_Binary_encoding(train)
     # ind_test_data=get_Binary_encoding(ind_test)
     # AdaBoost_Classifer(train_data,ind_test_data)
-
-
 
     #AAC encode:
     # train_data=get_AAC_encoding(train)
@@ -462,16 +455,14 @@ if __name__ == '__main__':
     # ind_test_data=get_EGAAC_encoding(ind_test)
     # AdaBoost_Classifer(train_data,ind_test_data)
 
-
     #AAindex encode
-    # train_data=get_AAindex_encode(train)
-    # ind_test_data=get_AAindex_encode(ind_test)
-    # AdaBoost_Classifer(train_data,ind_test_data)
-
+    train_data=get_AAindex_encode(train)
+    ind_test_data=get_AAindex_encode(ind_test)
+    AdaBoost_Classifer(train_data,ind_test_data)
 
     #BLOSUM62 encode：
-    train_data=get_BLOSUM62_encoding(train)
-    ind_test_data=get_BLOSUM62_encoding(ind_test)
-    AdaBoost_Classifer(train_data,ind_test_data)
+    # train_data=get_BLOSUM62_encoding(train)
+    # ind_test_data=get_BLOSUM62_encoding(ind_test)
+    # AdaBoost_Classifer(train_data,ind_test_data)
 
 
