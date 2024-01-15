@@ -181,7 +181,7 @@ model = KcrNet(input_size=input_size,hidden_size=hidden_size,num_layers=num_laye
 model.to(device)
 
 #load mmodel
-model_path= "../model_weights/ind_test/6_PlantNh-Kcr-FinalWeight.pth"
+model_path= "../model_weights/ind_test/1_PlantNh-Kcr-FinalWeight.pth"
 model.load_state_dict(torch.load(model_path,map_location=torch.device("cuda:0" if torch.cuda.is_available() else "cpu")))
 
 from sklearn.manifold import TSNE
