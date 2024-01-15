@@ -10,8 +10,8 @@ Please feel free to contact me if you need any further information and help, by 
 
 2. The code for the five-fold cross-validation, independent test are located in **the Codes folder**. The weights of models on five-fold cross-validation model weight and independent test, and the weights of models for each plant are located in **the model_weights folder**.
 
-3. **The Csv folder** contains the csv files of training and test sets for each plant. 
-
 4. There are the files of total training set and independent tes set in **the Datasets folder**.
 
-5. **The DL_classifer folder** and **DL_weights folder** contains deep learning classifiers(for example, CNN, LSTM, and BiLSTM) and the model weight information saved during model training and independent testing.
+3. **The Species_train_test_sets** contains the csv files of training and test sets for each plant.
+   
+5. **The np_weights folder**  contains the metrics value results of the model.
