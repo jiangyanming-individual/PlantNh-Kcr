@@ -243,7 +243,6 @@ n,seq_len,num_size=test_First_Conv1D_features.shape
 test_First_Conv1D_features=test_First_Conv1D_features.reshape((n,seq_len *num_size))
 print(test_First_Conv1D_features.shape)
 
-
 # 3Conv1D
 n,seq_len,num_size=test_Third_Conv1D_features.shape
 test_Third_Conv1D_features=test_Third_Conv1D_features.reshape((n,seq_len *num_size ))
@@ -281,55 +280,6 @@ l2 = plt.Line2D(range(0), range(0), marker='o', color='skyblue', linestyle='')
 plt.legend((l1, l2), ('Kcr', 'Non-Kcr'), loc='upper right', numpoints=1)
 plt.savefig("../figures/Input-Layer-test-visual.jpg", dpi=600)
 plt.show()
-
-# test : First_Conv1D_features
-# tsne = TSNE(n_components=2)
-#
-# test_First_Conv1D_stne = tsne.fit_transform(test_First_Conv1D_features)
-#
-# for i, label in enumerate(labels):
-#     if int(label) == 1:
-#         plt.scatter(test_First_Conv1D_stne[i, 0], test_First_Conv1D_stne[i, 1], c='r', s=0.9, facecolors='none',
-#                     label='Kcr')
-#     else:
-#         plt.scatter(test_First_Conv1D_stne[i, 0], test_First_Conv1D_stne[i, 1], c='skyblue', s=0.9, facecolors='none',
-#                     label='Non-Kcr')
-#
-# plt.title("First-Conv1D-Layer")
-# plt.ylabel('Dimension2', fontweight='bold')
-# plt.xlabel('Dimension1', fontweight='bold')
-#
-#
-# l1 = plt.Line2D(range(0), range(0), marker='o', color='r', linestyle='')
-# l2 = plt.Line2D(range(0), range(0), marker='o', color='skyblue', linestyle='')
-# plt.legend((l1, l2), ('Kcr', 'Non-Kcr'), loc='upper right', numpoints=1)
-# plt.savefig("../figures/1_Conv1D-Layer-test-visual.png", dpi=600)  # 保存图片，dpi设置分辨率
-# plt.show()
-
-
-# test :Third_Conv1D_features
-# tsne = TSNE(n_components=2)
-# test_Third_Conv1D_tsne = tsne.fit_transform(test_Third_Conv1D_features)
-#
-# for i, label in enumerate(labels):
-#     if int(label) == 1:
-#         plt.scatter(test_Third_Conv1D_tsne[i, 0], test_Third_Conv1D_tsne[i, 1], c='r', s=0.9, facecolors='none',
-#                     label='Kcr')
-#     else:
-#         plt.scatter(test_Third_Conv1D_tsne[i, 0], test_Third_Conv1D_tsne[i, 1], c='skyblue', s=0.9,
-#                     facecolors='none', label='Non-Kcr')
-#
-# plt.title("Third-Conv1D-Layer")
-# plt.ylabel('Dimension2', fontweight='bold')
-# plt.xlabel('Dimension1', fontweight='bold')
-#
-#
-# l1 = plt.Line2D(range(0), range(0), marker='o', color='r', linestyle='')
-# l2 = plt.Line2D(range(0), range(0), marker='o', color='skyblue', linestyle='')
-# plt.legend((l1, l2), ('Kcr', 'Non-Kcr'), loc='upper right', numpoints=1)
-#
-# plt.savefig("../figures/3_Conv1D-Layer-test-visual.png", dpi=600)
-# plt.show()
 
 
 # test:total_outputs_features
